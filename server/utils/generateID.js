@@ -37,8 +37,8 @@ function createSnowflakeId() {
     let snowflakeID = toDecimal(timeSinceEpoch + internalWorkerID + internalProcessID + increment);
 
     // check if ID is already used
-    while (lastSnowflakeID.includes(snowflakeID)) {
-        snowflakeID = create();
+    if (lastSnowflakeID.includes(snowflakeID)) {
+        return createSnowflakeId();
     }
 
     // clear lastSnowflakeID array

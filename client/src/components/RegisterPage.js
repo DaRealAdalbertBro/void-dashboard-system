@@ -17,7 +17,7 @@ const RegisterPage = () => {
     Axios.defaults.withCredentials = true;
 
     const register = () => {
-        Axios.post('http://localhost:3001/register', {
+        Axios.post('http://localhost:3001/api/post/register', {
             username: username,
             email: email,
             password: password,
@@ -25,10 +25,9 @@ const RegisterPage = () => {
                 return status < 500;
             }
         }).then((response) => {
-
             setRegisterError(response.data.message);
 
-            if (response.data.message.includes("been registered")) {
+            if (response.data.status || response.data.message == 'Registration successful') {
                 return navigate('/dashboard');
             }
 
@@ -137,12 +136,12 @@ const RegisterPage = () => {
 
             <div className="login-box">
                 <form className="login-form" ref={formRef}>
-                    <h1>Login</h1>
+                    <h1>Register</h1>
 
                     <div className="login-input">
                         <FaUserAlt />
 
-                        <input type="text" placeholder="Enter username" onChange={(e) => {
+                        <input autoComplete="new-password" type="text" placeholder="Enter username" onChange={(e) => {
                             validateUsername(e);
                         }} />
 
@@ -154,7 +153,7 @@ const RegisterPage = () => {
                     <div className="login-input">
                         <MdOutlineAlternateEmail />
 
-                        <input type="email" placeholder="Enter email" onChange={(e) => {
+                        <input autoComplete="new-password" type="email" placeholder="Enter email" onChange={(e) => {
                             validateEmail(e);
                         }} />
 
@@ -166,7 +165,7 @@ const RegisterPage = () => {
                     <div className="login-input">
                         <FaLock />
 
-                        <input type="password" placeholder="Enter password" onChange={(e) => {
+                        <input autoComplete="new-password" type="password" placeholder="Enter password" onChange={(e) => {
                             validatePassword(e);
                         }} />
 
@@ -178,7 +177,7 @@ const RegisterPage = () => {
                     <div className="login-error">{registerError}</div>
 
 
-                    <button type="submit" className="login-button" onClick={() => register}>Continue</button>
+                    <button type="submit" className="login-button" onClick={() => register()}>Continue</button>
 
                 </form>
 

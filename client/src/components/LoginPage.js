@@ -17,7 +17,7 @@ const LoginPage = () => {
     Axios.defaults.withCredentials = true;
 
     const login = () => {
-        Axios.post('http://localhost:3001/login', {
+        Axios.post('http://localhost:3001/api/post/login', {
             username: username,
             password: password,
             validateStatus: (status) => {
@@ -27,7 +27,7 @@ const LoginPage = () => {
 
             setLoginError(response.data.message);
 
-            if (response.data.message.includes("Logged in successfully")) {
+            if (response.data.status || response.data.message == 'Login successful') {
                 return navigate('/dashboard');
             }
 
@@ -98,12 +98,15 @@ const LoginPage = () => {
 
 
     useEffect(() => {
+        // Prevent form from submitting, so we can handle it with JS
         formRef.current.addEventListener('submit', (e) => {
             e.preventDefault();
         });
 
-        Axios.get('http://localhost:3001/login').then((response) => {
-            if (response.data.loggedIn) {
+        // Check if user is already logged in
+        Axios.get('http://localhost:3001/api/get/userinfo').then((response) => {
+            // If user is logged in, redirect to dashboard
+            if (response.data.status && response.data.user) {
                 return navigate('/dashboard');
             }
         });

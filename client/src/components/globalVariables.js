@@ -1,5 +1,5 @@
 
-const defaultProfilePicture = "/assets/images/default_profile_picture.webp"
-const allowSpecialCharactersInUsername = true;
+const defaultProfilePicture = "/assets/images/avatars/default.webp"
+const allowSpecialCharactersInUsername = false;
 
 export { defaultProfilePicture, allowSpecialCharactersInUsername }

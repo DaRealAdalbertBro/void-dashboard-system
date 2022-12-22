@@ -1,0 +1,14 @@
+{
+    "database": {
+        "users_table_name": "users",
+        "users_table_columns": {
+            "user_id": "user_id",
+            "user_name": "user_name",
+            "user_tag": "user_tag",
+            "user_password_hash": "user_password_hash",
+            "user_email": "user_email",
+            "user_permissions": "user_permissions",
+            "user_avatar_url": "user_avatar_url"
+        }
+    }
+}

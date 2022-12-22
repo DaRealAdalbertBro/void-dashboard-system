@@ -9,7 +9,6 @@ import { MdArrowDropDown } from "react-icons/md";
 import { defaultProfilePicture } from './globalVariables';
 
 import '../css/Dashboard.css';
-import useFetch from './useFetch';
 
 Axios.defaults.withCredentials = true;
 
@@ -22,11 +21,8 @@ const Dashboard = ({ componentToShow }) => {
     const [profilePicture, setProfilePicture] = useState("");
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
-
-    const { data, isPending, error } = useFetch('/api/userinfo');
-
     const handleLogout = () => {
-        Axios.post('http://localhost:3001/logout').then((response) => {
+        Axios.post('http://localhost:3001/api/post/logout').then((response) => {
             if (response.data.message === 'Logged out') {
                 return navigate('/');
             }
@@ -67,23 +63,22 @@ const Dashboard = ({ componentToShow }) => {
 
 
     useEffect(() => {
+        Axios.get('http://localhost:3001/api/get/userinfo').then((response) => {
+            // if user is not logged in, redirect to login page
+            if (response.data.status) {
+                setUsername(response.data.user.user_name);
+                setEmail(response.data.user.user_email);
+                setPermissionLevel(response.data.user.user_permissions);
+                setProfilePicture(response.data.user.user_avatar_url || defaultProfilePicture);
 
-        // If user is not logged in, redirect to login page
+                setResponse(response);
+                return;
+            }
 
-        if (!isPending && (!data.loggedIn || error || !data.user)) {
             return navigate('/');
-        }
+        });
 
-        if (data && data.user) {
-            setUsername(data.user.user_name);
-            setEmail(data.user.user_email);
-            setPermissionLevel(data.user.user_permissions);
-            setProfilePicture(data.user.user_profile_picture ? data.user.user_profile_picture : "/assets/images/default_profile_picture.webp");
-
-            setResponse(response);
-        }
-
-    }, [data]);
+    }, []);
 
     useEffect(() => {
         const componentRef = componentToShow ? document.getElementById((componentToShow.type.name).toString().toLowerCase()) : document.getElementById("home");

@@ -9,186 +9,201 @@ import { defaultProfilePicture, allowSpecialCharactersInUsername } from './globa
 
 import "../css/Profile.css";
 
-const Profile = () => {
-    const navigate = useNavigate();
+const validateUsernameSettings = (event) => {
+    const value = event.currentTarget.value;
 
-    const { data, isPending, error } = useFetch("/api/userinfo");
-
-
-    const validateUsernameSettings = (event) => {
-        const value = event.currentTarget.value;
-
-        // look for special characters if enabled
-        if (!allowSpecialCharactersInUsername) {
-            const regex = /^[0-9a-zA-Z_.-]+$/;
-            if (!regex.test(value)) {
-                return event.currentTarget.value = value.slice(0, -1);
-            }
-
-            if ((value[value.length - 1] == '.' && value[value.length - 2] == '.' && value[value.length - 3] == '.')
-                || (value[value.length - 1] == '-' && value[value.length - 2] == '-' && value[value.length - 3] == '-')
-                || (value[value.length - 1] == '_' && value[value.length - 2] == '_' && value[value.length - 3] == '_')) {
-                return event.currentTarget.value = value.slice(0, -1);
-            }
-        }
-
-        // check length
-        if (value.length > 32) {
-            return event.currentTarget.value = value.slice(0, 32);
-        }
-
-        return event.currentTarget.value = value;
-    }
-
-    const validatePasswordSettings = (event) => {
-        const value = event.currentTarget.value;
-
-        if (value.length > 255) {
-            return event.currentTarget.value = value.slice(0, 255);
-        }
-
-        return event.currentTarget.value = value;
-    }
-
-    const validateTagSettings = (event) => {
-        const value = event.currentTarget.value;
-        if (!isNumberOnly(value)) {
+    // look for special characters if enabled
+    if (!allowSpecialCharactersInUsername) {
+        const regex = /^[0-9a-zA-Z_.-]+$/;
+        if (!regex.test(value)) {
             return event.currentTarget.value = value.slice(0, -1);
         }
 
-        if (value.length > 4) {
-            return event.currentTarget.value = value.slice(0, 4);
+        if ((value[value.length - 1] == '.' && value[value.length - 2] == '.' && value[value.length - 3] == '.')
+            || (value[value.length - 1] == '-' && value[value.length - 2] == '-' && value[value.length - 3] == '-')
+            || (value[value.length - 1] == '_' && value[value.length - 2] == '_' && value[value.length - 3] == '_')) {
+            return event.currentTarget.value = value.slice(0, -1);
         }
-
-        return event.currentTarget.value = value;
     }
 
-    const addPaddingToTag = (event) => {
-        const value = event.currentTarget.value;
-        if (value.length === 0) return;
-
-        if (value.length < 4) {
-            return event.currentTarget.value = value.padStart(4, "0");
-        }
-
-        if (value.length > 4) {
-            return event.currentTarget.value = value.slice(0, 4);
-        }
-
-        return event.currentTarget.value = value;
+    // check length
+    if (value.length > 32) {
+        return event.currentTarget.value = value.slice(0, 32);
     }
 
-    const isNumberOnly = (string) => {
-        const regex = /^[0-9]+$/;
-        return regex.test(string);
+    return event.currentTarget.value = value;
+}
+
+const validatePasswordSettings = (event) => {
+    const value = event.currentTarget.value;
+
+    if (value.length > 255) {
+        return event.currentTarget.value = value.slice(0, 255);
     }
 
-    function isEmail(email) {
-        email = email.currentTarget.value;
-        if (email.length === 0) return true;
-        const regex = /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/;
-        return regex.test(email);
+    return event.currentTarget.value = value;
+}
+
+const validateTagSettings = (event) => {
+    const value = event.currentTarget.value;
+    if (!isNumberOnly(value)) {
+        return event.currentTarget.value = value.slice(0, -1);
     }
 
-    const validateEmailSettings = (event) => {
-        const value = event.currentTarget.value;
-
-        if (event.currentTarget.classList.contains("error")) {
-            event.currentTarget.classList.remove("error");
-        }
-
-        if (value.length > 255) {
-            return event.currentTarget.value = value.slice(0, 255);
-        }
-
-        return event.currentTarget.value = value;
+    if (value.length > 4) {
+        return event.currentTarget.value = value.slice(0, 4);
     }
 
-    const submitUserSettings = () => {
-        const user_name = document.querySelector(".user-name-settings").value;
-        const user_tag = document.querySelector(".user-tag-settings").value;
-        const user_email = document.querySelector(".user-email-settings").value;
+    return event.currentTarget.value = value;
+}
 
-        let updateObject = {};
+const addPaddingToTag = (event) => {
+    const value = event.currentTarget.value;
+    if (value.length === 0) return;
 
-        if (user_name.length > 0) {
-            updateObject.user_name = user_name;
-        }
-
-        if (user_tag.length > 0 && isNumberOnly(user_tag)) {
-            updateObject.user_tag = user_tag;
-        }
-
-        if (user_email.length > 0) {
-            updateObject.user_email = user_email;
-        }
-
-        if (Object.keys(updateObject).length === 0) {
-            return;
-        }
-
-
-        Axios.post("/api/user/update", updateObject)
-            .then((response) => {
-                if (response.data.success) {
-                    window.location.reload();
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-
+    if (value.length < 4) {
+        return event.currentTarget.value = value.padStart(4, "0");
     }
+
+    if (value.length > 4) {
+        return event.currentTarget.value = value.slice(0, 4);
+    }
+
+    return event.currentTarget.value = value;
+}
+
+const isNumberOnly = (string) => {
+    const regex = /^[0-9]+$/;
+    return regex.test(string);
+}
+
+function isEmail(email) {
+    email = email.currentTarget.value;
+    if (email.length === 0) return true;
+    const regex = /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/;
+    return regex.test(email);
+}
+
+const validateEmailSettings = (event) => {
+    const value = event.currentTarget.value;
+
+    if (event.currentTarget.classList.contains("error")) {
+        event.currentTarget.classList.remove("error");
+    }
+
+    if (value.length > 255) {
+        return event.currentTarget.value = value.slice(0, 255);
+    }
+
+    return event.currentTarget.value = value;
+}
+
+const submitUserSettings = () => {
+    const user_name = document.querySelector(".user-name-settings").value;
+    const user_tag = document.querySelector(".user-tag-settings").value;
+    const user_email = document.querySelector(".user-email-settings").value;
+
+    let updateObject = {};
+
+    if (user_name.length > 0) {
+        updateObject.user_name = user_name;
+    }
+
+    if (user_tag.length > 0 && isNumberOnly(user_tag)) {
+        updateObject.user_tag = user_tag;
+    }
+
+    if (user_email.length > 0) {
+        updateObject.user_email = user_email;
+    }
+
+    if (Object.keys(updateObject).length === 0) {
+        return;
+    }
+
+
+    Axios.post("/api/post/updateuser", updateObject)
+        .then((response) => {
+            if (response.data.status) {
+                window.location.reload();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+
+}
+
+// get average color of profile picture
+function getAverageColor(imageElement, ratio) {
+    const canvas = document.createElement("canvas")
+
+    let height = canvas.height = imageElement.naturalHeight
+    let width = canvas.width = imageElement.naturalWidth
+
+    const context = canvas.getContext("2d")
+    context.drawImage(imageElement, 0, 0)
+
+    let data, length
+    let i = -4;
+    let count = 0;
+
+
+    try {
+        data = context.getImageData(0, 0, width, height)
+        length = data.data.length
+
+
+    } catch (err) {
+        return {
+            R: 0,
+            G: 0,
+            B: 0
+        }
+    }
+    let R, G, B
+    R = G = B = 0
+
+    while ((i += ratio * 4) < length) {
+        ++count;
+
+        R += data.data[i]
+        G += data.data[i + 1]
+        B += data.data[i + 2]
+    }
+
+    R = ~~(R / count)
+    G = ~~(G / count)
+    B = ~~(B / count)
+
+    return {
+        R,
+        G,
+        B
+    }
+}
+
+const Profile = () => {
+    const navigate = useNavigate();
+
+    const { data, isPending, error } = useFetch("/api/get/userinfo");
+    const [userRole, setUserRole] = useState("User");
 
 
     useEffect(() => {
 
-        // get average color of profile picture
-        function getAverageColor(imageElement, ratio) {
-            const canvas = document.createElement("canvas")
-
-            let height = canvas.height = imageElement.naturalHeight
-            let width = canvas.width = imageElement.naturalWidth
-
-            const context = canvas.getContext("2d")
-            context.drawImage(imageElement, 0, 0)
-
-            let data, length
-            let i = -4;
-            let count = 0;
-
-
-            try {
-                data = context.getImageData(0, 0, width, height)
-                length = data.data.length
-
-
-            } catch (err) {
-                return {
-                    R: 0,
-                    G: 0,
-                    B: 0
-                }
-            }
-            let R, G, B
-            R = G = B = 0
-
-            while ((i += ratio * 4) < length) {
-                ++count;
-
-                R += data.data[i]
-                G += data.data[i + 1]
-                B += data.data[i + 2]
-            }
-
-            R = ~~(R / count)
-            G = ~~(G / count)
-            B = ~~(B / count)
-
-            return {
-                R,
-                G,
-                B
+        // set user permission level to readable format
+        if (data && data.user && data.user.user_permissions) {
+            switch (data.user.user_permissions) {
+                case 1:
+                    setUserRole("Editor");
+                    break;
+                case 2:
+                    setUserRole("Admin");
+                    break;
+                default:
+                    setUserRole("User");
+                    break;
             }
         }
 
@@ -221,7 +236,6 @@ const Profile = () => {
 
     return (
         <div className="profile-container">
-            {isPending && <div className="loader"></div>}
             {error && <div>{error}</div>}
             {
                 (data && data.user)
@@ -229,7 +243,7 @@ const Profile = () => {
                         <div className="profile-container">
                             <div className="profile">
                                 <div className="profile-picture">
-                                    <img src={data.user.user_profile_picture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} crossOrigin="Anonymous" draggable="false" alt="" id="profile-picture" />
+                                    <img src={data.user.user_avatar_url || defaultProfilePicture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} crossOrigin="Anonymous" draggable="false" alt="" id="profile-picture" />
                                 </div>
                                 <div className="profile-info">
                                     <div className="profile-name">
@@ -241,7 +255,7 @@ const Profile = () => {
                                     <div className="profile-bio">
                                         <div className="profile-permission-level">
                                             <FcServices />
-                                            Role: <span className="darker">{data.user.user_permissions === 0 ? "User" : data.user.user_permissions === 1 ? "Editor" : "Admin"}</span>
+                                            Role: <span className="darker">{userRole}</span>
                                         </div>
 
                                         <div className="created-at">
