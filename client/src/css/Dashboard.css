@@ -1,0 +1,239 @@
+.dashboard-container {
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+    display: grid;
+    grid-template-columns: 240px 100% auto;
+    grid-template-areas: "sidebar header header"
+        "sidebar content content";
+
+    background-color: var(--default-background);
+}
+
+.dashboard-container .dashboard-header {
+    grid-area: header;
+    width: calc(100% - 240px);
+    height: 56px;
+    background-color: var(--gray);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 32px;
+    user-select: none;
+    z-index: 1000;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 32px;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons>div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile {
+    color: var(--lighter-text);
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .small-profile-info:hover {
+    color: var(--default-text) !important;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .small-profile-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    transition: 0.1s;
+}
+
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    background-color: var(--lighter-gray);
+    border-radius: 8px;
+    top: 56px;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    gap: 16px;
+    cursor: pointer;
+    width: 100%;
+    padding: 12px 32px;
+    transition: 0.2s;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-divider {
+    width: 100%;
+    height: 1px;
+    background-color: var(--divider-gray);
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item:hover {
+    background-color: var(--gray);
+    color: var(--default-text) !important;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item svg {
+    font-size: 18px;
+    color: var(--lighter-text);
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile svg {
+    font-size: 28px;
+    color: var(--default-text);
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .logout svg {
+    font-size: 24px;
+    color: var(--red);
+    transition: 0.1s;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .logout svg:hover {
+    color: var(--red-hover);
+}
+
+.dashboard-container .dashboard-left-bar {
+    grid-area: sidebar;
+    width: 240px;
+    height: 100%;
+    background-color: var(--gray);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    user-select: none;
+    z-index: 1000;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-header-title {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    margin: 16px 0;
+    padding: 0 24px;
+    cursor: pointer;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-header-title h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--purple);
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-header-title svg {
+    font-size: 24px;
+    color: var(--purple);
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item-section {
+    width: 80%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 16px;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item-section h2 {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 8px 0;
+    color: var(--lighter-text);
+    opacity: 0.5;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item {
+    background-color: var(--lighter-gray);
+    color: var(--lighter-text);
+    width: 80%;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item:nth-child(3) {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item:last-of-type {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item:hover {
+    background-color: var(--lighter-gray-hover);
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item p {
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 2px;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item svg {
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item.active {
+    background-color: var(--purple-active);
+    color: var(--default-text);
+    cursor:grab;
+}
+
+.dashboard-content {
+    grid-area: content;
+    width: calc(100% - 240px);
+    min-height: calc(100vh - 56px);
+    height: auto;
+    background-color: var(--default-background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
