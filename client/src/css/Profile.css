@@ -150,22 +150,31 @@
 }
 
 .profile-container .profile-bottom .box-wrapper {
-    width: 100%;
+    width: 80%;
     height: auto;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
     justify-content: center;
     gap: 32px;
     padding: 32px;
     flex-wrap: wrap;
 }
 
+.profile-container .profile-bottom .box-wrapper .settings-wrapper {
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
 .profile-container .profile-bottom .box-wrapper .box {
     width: auto;
     height: auto;
-    min-width: 200px;
-    min-height: 200px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -173,8 +182,16 @@
     padding: 32px;
     background-color: var(--gray);
     border-radius: 12px;
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 32px 4px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 24px 4px;
     transition: 0.1s;
+}
+
+.profile-container .profile-bottom .box-wrapper .box#save {
+    width: 100%;
+    min-width: 92px;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
 }
 
 .profile-container .profile-bottom .box-wrapper .box h2 {
@@ -223,9 +240,9 @@
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info input:-webkit-autofill,
-.profile-container .profile-bottom .box-wrapper .box .user-info input:-webkit-autofill:hover, 
-.profile-container .profile-bottom .box-wrapper .box .user-info input:-webkit-autofill:focus, 
-.profile-container .profile-bottom .box-wrapper .box .user-info input:-webkit-autofill:active{
+.profile-container .profile-bottom .box-wrapper .box .user-info input:-webkit-autofill:hover,
+.profile-container .profile-bottom .box-wrapper .box .user-info input:-webkit-autofill:focus,
+.profile-container .profile-bottom .box-wrapper .box .user-info input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px var(--default-background) inset !important;
     -webkit-text-fill-color: var(--default-text) !important;
 }
@@ -241,7 +258,7 @@
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info .email,
-.profile-container .profile-bottom .box-wrapper .box .user-info .password{
+.profile-container .profile-bottom .box-wrapper .box .user-info .password {
     font-size: 24px;
     color: var(--lighter-text);
     opacity: 0.6;
@@ -270,8 +287,8 @@
     min-width: 124px;
 }
 
-.profile-container .profile-bottom .box-wrapper .box .user-info input.user-email-settings.error {
-    color: var(--red);
+.error {
+    color: var(--red)!important;
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info input.user-password-settings {
@@ -284,14 +301,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 48px auto 24px auto;
-    width: 70%;
-    height: 52px;
+    width: 100%;
+    padding: 12px;
     border-radius: 6px;
     background-color: var(--green);
     color: var(--default-background);
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
     transition: 0.1s;
     cursor: pointer;
+    opacity: 0.8;
+}
+
+.settings-submit-button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.settings-submit-button.disabled:hover {
+    opacity: 0.4;
+}
+
+.settings-submit-button:hover {
+    opacity: 1;
 }

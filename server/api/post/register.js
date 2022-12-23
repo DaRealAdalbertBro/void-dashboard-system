@@ -4,6 +4,7 @@ module.exports = function (app, db_connection) {
     const createNewUserTag = require('../../utils/generateTag.js').createNewUserTag;
     const utils = require('../../utils/proceedData.js')(db_connection);
     const bcrypt = require('bcrypt');
+    
     // salt rounds for bcrypt
     const saltRounds = 10;
 

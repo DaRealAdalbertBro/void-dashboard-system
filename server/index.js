@@ -65,6 +65,7 @@ db_connection.connect((error) => {
 require("./api/post/register")(app, db_connection);
 require("./api/post/login")(app, db_connection);
 require("./api/post/logout")(app);
+require("./api/post/updateuser")(app, db_connection);
 
 // GET
 require("./api/get/userinfo")(app);
