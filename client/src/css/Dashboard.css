@@ -222,7 +222,7 @@
 }
 
 .dashboard-container .dashboard-left-bar .dashboard-left-bar-item.active {
-    background-color: var(--purple-active);
+    background-color: var(--purple);
     color: var(--default-text);
     cursor:grab;
 }

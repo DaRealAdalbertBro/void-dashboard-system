@@ -23,7 +23,7 @@ const Dashboard = ({ componentToShow }) => {
 
     const handleLogout = () => {
         Axios.post('http://localhost:3001/api/post/logout').then((response) => {
-            if (response.data.message === 'Logged out') {
+            if (response.data.status) {
                 return navigate('/');
             }
         });

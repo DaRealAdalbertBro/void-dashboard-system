@@ -90,3 +90,33 @@ export const addPaddingToStringNumber = (number, padding) => {
     // return padded string
     return stringNumber;
 }
+
+export const compareTwoStrings = (string1, string2) => {
+    return string1 === string2;
+}
+
+export const arrayStringToArray = (string) => {
+    try {
+        return JSON.parse(string);
+    } catch (err) {
+        return [];
+    }
+}
+
+export const averageColorToGradient = (averageColor) => {
+    // declare 1st RGB variable for gradient
+    const rgb = `${averageColor[0]}, ${averageColor[1]}, ${averageColor[2]}`;
+
+    // do something with the color to make it darker or lighter
+    let baseIncrement = 10;
+    let baseDecrement = 15;
+    let decrementR = averageColor[0] > 125 ? -baseDecrement : baseIncrement;
+    let decrementG = averageColor[1] > 125 ? -baseDecrement : baseIncrement;
+    let decrementB = averageColor[2] > 125 ? -baseDecrement : baseIncrement;
+
+    // declare 2nd RGB variable for gradient
+    const rgb2 = `${averageColor[0] + decrementR}, ${averageColor[1] + decrementG}, ${averageColor[2] + decrementB}`;
+
+    // return gradient
+    return `linear-gradient(to bottom, rgba(${rgb}, 1), rgba(${rgb2}, 0.7), rgba(${rgb2}, 0.7))`;
+}

@@ -4,9 +4,8 @@ module.exports = function (app, db_connection) {
     const createNewUserTag = require('../../utils/generateTag.js').createNewUserTag;
     const utils = require('../../utils/proceedData.js')(db_connection);
     const bcrypt = require('bcrypt');
-    
-    // salt rounds for bcrypt
-    const saltRounds = 10;
+    const CONFIG = require('../../config.json');
+
 
     // handle post request to /register
     app.post('/api/post/register', (request, response) => {
@@ -25,14 +24,14 @@ module.exports = function (app, db_connection) {
             || Buffer.byteLength(password, "utf-8") > 255
             || Buffer.byteLength(email, "utf-8") > 255) {
             // if not, return error message
-            return response.send({ status: 0, message: 'Invalid username, email or password' });
+            return response.send({ status: 0, message: CONFIG.messages.INVALID_CREDENTIALS });
         }
 
         // check if email is already in use
         utils.emailExists(email).then(async (result) => {
             // check promise result and return error message if email is in use
             if (result.length > 0) {
-                return response.send({ status: 0, message: 'Email already in use' });
+                return response.send({ status: 0, message: CONFIG.messages.EMAIL_ALREADY_IN_USE });
             }
 
             // if email is not in use
@@ -50,33 +49,36 @@ module.exports = function (app, db_connection) {
                 }
 
                 // if user id and user tag are not in use, hash password
-                bcrypt.hash(password, saltRounds, async (err, hash) => {
-                    // return error message if hashing failed
-                    if (err) {
-                        return response.send({ status: 0, message: 'Something went wrong... Try again later!' });
-                    }
-
+                utils.hashPassword(password).then(async (hash) => {
                     // insert user into database
                     const insertNewUser = await utils.insertNewUser(user_id, user_name, user_tag, email, hash);
 
                     // return success message if user was inserted into database
                     if (insertNewUser) {
                         // create session for new user
-                        await utils.storeDataInSession(request, user_id, user_name, user_tag, email, 0, "/assets/images/avatars/default.png");
+                        await utils.storeDataInSession(request, user_id, user_name, user_tag, email, 0);
 
-                        return response.send({ status: 1, message: 'Registration successful' });
+                        return response.send({ status: 1, message: CONFIG.messages.REGISTRATION_SUCCESSFUL });
                     }
 
                     // return error message if user was not inserted into database
-                    return response.send({ status: 0, message: 'Something went wrong... Try again later!' });
-                }); // end of bcrypt.hash
+                    return response.send({ status: 0, message: CONFIG.messages.SOMETHING_WENT_WRONG });
+                }).catch((err) => {
+                    console.log(err)
+                    // return error message if hashing failed
+                    return response.send({ status: 0, message: CONFIG.messages.SOMETHING_WENT_WRONG });
+                }); // end of hashPassword promise
 
-                break;
-            } // end of while loop
+            } // end of for loop
 
+            // return error message if user id and user tag could not be generated
+            return response.send({ status: 0, message: CONFIG.messages.SOMETHING_WENT_WRONG });
+        }).catch((err) => {
+            console.log(err)
+            // return error message if email check failed
+            return response.send({ status: 0, message: CONFIG.messages.SOMETHING_WENT_WRONG });
+        }); // end of emailExists promise
+    }); // end of app.post
 
-        }); // end of utils.emailExists
-
-    });
 
 }

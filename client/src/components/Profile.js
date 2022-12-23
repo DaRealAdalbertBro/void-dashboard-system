@@ -7,10 +7,12 @@ import { MdOutlineAlternateEmail, MdOutlineLock } from "react-icons/md";
 import Axios from "axios";
 import { defaultProfilePicture } from './globalVariables';
 
-import { isUsernameValid, isTagValid, isPasswordValid, isUpdateValid, isInputValidShowErrors } from "../utils/validateInput";
+import { isUsernameValid, isTagValid, isPasswordValid, isUpdateValid, isPasswordUpdateValid, isInputValidShowErrors } from "../utils/validateInput";
 
 import "../css/Profile.css";
-import { addPaddingToStringNumber, getAverageColor } from "../utils/utils";
+import { addPaddingToStringNumber, getAverageColor, averageColorToGradient } from "../utils/utils";
+
+import { CustomPopup } from "./CustomPopup";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -18,10 +20,26 @@ const Profile = () => {
     let { data, isPending, error } = useFetch("/api/get/userinfo");
     const [userRole, setUserRole] = useState("User");
     const [canSaveSettings, setCanSaveSettings] = useState(false);
+    const [canSavePassword, setCanSavePassword] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupTitle, setPopupTitle] = useState("Warning");
+    const [popupMessage, setPopupMessage] = useState("Something went wrong... Try again later!");
+    const [bannerProfileColor, setBannerProfileColor] = useState(null);
 
-    const submitUserSettings = (data) => {
-        const updateValid = isUpdateValid(data);
+    const submitUserSettings = (data, type = "userinfo") => {
+
+        // check if settings can be saved
+        if ((type == "userinfo" && !canSaveSettings)
+            || (type == "password" && !canSavePassword)) {
+            return false;
+        }
+
+        const updateValid = type == "userinfo" ? isUpdateValid(data) : isPasswordUpdateValid(data);
         if (!updateValid.status) {
+            console.log("update not valid")
+            setShowPopup(true);
+            setPopupTitle("Warning");
+            setPopupMessage("Something went wrong... Try again later! Could not update user info!");
             return false;
         }
 
@@ -33,18 +51,28 @@ const Profile = () => {
                     // update data with new user info
                     data.user = response.data.user;
 
-                    // disable save button
-                    setCanSaveSettings(false);
-
                     // reload page
-                    window.location.replace("/dashboard/profile");
+                    return window.location.replace("/dashboard/profile");
                 }
+
+                // if update was not successful
+                setShowPopup(true);
+                setPopupTitle("Warning");
+                setPopupMessage(response.data.message);
+
+
             })
             .catch((error) => {
                 console.log(error);
             })
 
+        if (type == "userinfo") {
+            setCanSaveSettings(false);
+        } else {
+            setCanSavePassword(false);
+        }
     }
+
 
     useEffect(() => {
         // set user permission level to readable format
@@ -60,26 +88,50 @@ const Profile = () => {
                     setUserRole("User");
                     break;
             }
+
+            console.log(data.user.user_banner_color)
         }
 
         // get dominant color of profile picture
-        const profilePicture = document.getElementById("profile-picture");
-        if (!profilePicture) return;
+        const avatarElement = document.getElementById("profile-picture");
+        if (!avatarElement) return;
 
-        profilePicture.onload = () => {
-            const averageColor = getAverageColor(profilePicture, 1);
+        avatarElement.onload = () => {
+            const banner = document.querySelector(".profile-container .profile");
+            
+            if (data && data.user
+                && (data.user.user_banner_color == null || data.user.user_banner_color == "[90,113,147]")) {
 
-            const rgb = `${averageColor.R}, ${averageColor.G}, ${averageColor.B}`;
-            let baseIncrement = 10;
-            let baseDecrement = 15;
-            let decrementR = averageColor.R > 125 ? -baseDecrement : baseIncrement;
-            let decrementG = averageColor.G > 125 ? -baseDecrement : baseIncrement;
-            let decrementB = averageColor.B > 125 ? -baseDecrement : baseIncrement;
+                console.log("setting banner color")
+                // set banner color to user's banner color
+                const averageColor = getAverageColor(avatarElement, 1);
 
-            const rgb2 = `${averageColor.R + decrementR}, ${averageColor.G + decrementG}, ${averageColor.B + decrementB}`;
-            document.querySelector(".profile-container .profile").style.backgroundImage = `linear-gradient(to bottom, rgba(${rgb}, 1), rgba(${rgb2}, 0.7), rgba(${rgb2}, 0.7))`;
+                // create gradient from this color
+                const gradient = averageColorToGradient(averageColor);
+
+                // set banner color
+                banner.style.background = gradient;
+
+                // set banner color to user's banner color
+                Axios.post("http://localhost:3001/api/post/updateuser", { user_id: data.user.user_id, user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]` })
+                    .then((response) => {
+                        // if update was successful
+                        if (response.data.status) {
+                            // update data with new user info
+                            data.user = response.data.user;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    }); // end of axios post
+
+            } else {
+                // set banner color to user's banner color
+                const averageColor = JSON.parse(data.user.user_banner_color);
+                const gradient = averageColorToGradient(averageColor);
+                banner.style.backgroundImage = gradient;
+            }
         }
-
 
     }, [data]);
 
@@ -91,6 +143,9 @@ const Profile = () => {
                 (data && data.user)
                     ? (
                         <div className="profile-container">
+
+                            {showPopup && <CustomPopup title={popupTitle} message={popupMessage} setShowPopup={setShowPopup} />}
+
                             <div className="profile">
                                 <div className="profile-picture">
                                     <img src={data.user.user_avatar_url || defaultProfilePicture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} crossOrigin="Anonymous" draggable="false" alt="" id="profile-picture" />
@@ -105,12 +160,12 @@ const Profile = () => {
                                     <div className="profile-bio">
                                         <div className="profile-permission-level">
                                             <FcServices />
-                                            Role: <span className="darker">{userRole}</span>
+                                            <span className="darker">Role: </span>{userRole}
                                         </div>
 
                                         <div className="created-at">
                                             <FcPlus />
-                                            Created at: <span className="darker">{new Date(data.user.user_created_at.date).toLocaleDateString() + ", " + new Date(data.user.user_created_at.date).toLocaleTimeString()}</span>
+                                            <span className="darker">Created at: </span>{new Date(data.user.user_created_at.date).toLocaleDateString() + ", " + new Date(data.user.user_created_at.date).toLocaleTimeString()}
                                         </div>
 
                                     </div>
@@ -196,40 +251,61 @@ const Profile = () => {
 
                                     </div>
 
-                                    <div className="box" id="password">
-                                        <h2>Change Password</h2>
-                                        <div className="user-info">
-                                            <div className="data-wrapper">
-                                                <MdOutlineLock className="password" />
+                                    <div className="settings-wrapper">
+                                        <div className="box" id="password">
+                                            <h2>Change Password</h2>
+                                            <div className="user-info">
+                                                <div className="data-wrapper">
+                                                    <MdOutlineLock className="password" />
 
-                                                <div className="vertical-divider"></div>
+                                                    <div className="vertical-divider"></div>
 
-                                                <input autoComplete="new-password" type="password" onChange={(e) => {
-                                                    e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
-                                                }} placeholder="Old Password" className="user-password-settings" id="old-password" minLength={8} maxLength={255} />
+                                                    <input autoComplete="new-password" type="password" onChange={(e) => {
+                                                        e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
+                                                    }} placeholder="Old Password" onBlur={e => {
+                                                        setCanSavePassword(isPasswordUpdateValid(data.user).status);
+
+                                                    }} className="user-password-settings" id="user-old-password-settings" minLength={8} maxLength={255} />
+                                                </div>
+
+                                                <div className="data-wrapper">
+                                                    <MdOutlineLock className="password" />
+
+                                                    <div className="vertical-divider"></div>
+
+                                                    <input autoComplete="new-password" type="password" onChange={(e) => {
+                                                        e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
+                                                    }} onBlur={e => {
+                                                        // check if passwords match
+                                                        isInputValidShowErrors(e, "password");
+
+                                                        setCanSavePassword(isPasswordUpdateValid(data.user).status);
+                                                    }} placeholder="New Password" className="user-password-settings" id="user-new-password-settings" minLength={8} maxLength={255} />
+                                                </div>
+
+                                                <div className="data-wrapper">
+                                                    <MdOutlineLock className="password" />
+
+                                                    <div className="vertical-divider"></div>
+
+                                                    <input autoComplete="new-password" type="password" onChange={(e) => {
+                                                        e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
+                                                    }} onBlur={e => {
+                                                        // check if passwords match
+                                                        isInputValidShowErrors(e, "password");
+
+                                                        setCanSavePassword(isPasswordUpdateValid(data.user).status);
+                                                    }} placeholder="Repeat New Password" className="user-password-settings" id="user-new-password-confirm-settings" minLength={8} maxLength={255} />
+                                                </div>
+
+
                                             </div>
+                                        </div>
 
-                                            <div className="data-wrapper">
-                                                <MdOutlineLock className="password" />
-
-                                                <div className="vertical-divider"></div>
-
-                                                <input autoComplete="new-password" type="password" onChange={(e) => {
-                                                    e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
-                                                }} placeholder="New Password" className="user-password-settings" id="new-password" minLength={8} maxLength={255} />
+                                        <div className="box" id="save-password">
+                                            <div className={`settings-submit-button ${canSavePassword ? "" : "disabled"}`} onClick={() => submitUserSettings(data.user, "password")}>
+                                                <p>Save</p>
                                             </div>
-
-                                            <div className="data-wrapper">
-                                                <MdOutlineLock className="password" />
-
-                                                <div className="vertical-divider"></div>
-
-                                                <input autoComplete="new-password" type="password" onChange={(e) => {
-                                                    e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
-                                                }} placeholder="Repeat New Password" className="user-password-settings" id="retype-new-password" minLength={8} maxLength={255} />
-                                            </div>
-
-
                                         </div>
                                     </div>
 

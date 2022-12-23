@@ -10,7 +10,6 @@
   --lighter-text: #dadadad3;
   --purple: #845EC2;
   --purple-hover: #5b3b8e;
-  --purple-active: #845EC2;
   --gray: #201d25;
   --divider-gray: #5e5a76;
   --lighter-gray: #2c2a33;
@@ -19,9 +18,8 @@
   --red-hover: #b91c1c;
   --blue: #008FBA;
   --darker-blue: #007592;
-  --green: #3FB6A3;
-  --green-hover: #2c7a6f;
-  --darker-green: #2c7a6f;
+  --green: #2c7a6f;
+  --green-hover: #3FB6A3;
 }
 
 body {
@@ -36,11 +34,11 @@ body {
 }
 
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active{
-    -webkit-box-shadow: 0 0 0 30px var(--default-background) inset !important;
-    -webkit-text-fill-color: var(--lighter-text) !important;
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--default-background) inset !important;
+  -webkit-text-fill-color: var(--lighter-text) !important;
 }
 
 .login-container {
@@ -177,7 +175,7 @@ input[type="password" i] {
 .loader {
   pointer-events: none;
   width: 30px;
-  height: 30px; 
+  height: 30px;
   border-radius: 50%;
   border: 3px solid var(--lighter-gray);
   border-top-color: var(--purple);
@@ -194,12 +192,190 @@ input[type="password" i] {
   transition: 0.3s ease-in-out;
 }
 
+.error-message {
+  color: var(--red);
+  font-size: 0.9rem;
+  margin: 12px 12px 0 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  background-color: rgba(0, 0, 0, 0.65);
+  animation: fadeIn 0.4s ease-in-out;
+  overflow: hidden;
+}
+
+.popup-container.hidden {
+  animation: fadeOut 0.2s ease-in-out;
+  opacity: 0;
+}
+
+.popup-container .popup-box {
+  width: 400px;
+  height: auto;
+  min-height: 242px;
+  background-color: var(--default-background);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 100;
+  overflow: hidden;
+  animation: zoomIn 0.4s ease-in-out;
+  box-shadow: black 0px 0px 48px 4px;
+}
+
+.popup-container .popup-box.hidden {
+  animation: zoomOut 0.2s ease-in-out;
+  transform: scale(0);
+}
+
+.popup-container .popup-box .popup-content {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+}
+
+.popup-container .popup-box .popup-heading-icon {
+  width: 100%;
+  height: 156px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--purple);
+}
+
+.popup-container .popup-box .popup-heading-icon svg {
+  font-size: 5em;
+  color: var(--gray);
+}
+
+.popup-container .popup-content .popup-header {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.popup-container .popup-content .popup-header h2 {
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: var(--purple);
+}
+
+.popup-container .popup-content .popup-body {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--lighter-text)
+}
+
+.popup-container .popup-content .popup-footer {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 8px;
+}
+
+.popup-container .popup-content .popup-footer .footer-spacer {
+  width: calc(100% - 32px);
+  display: flex;
+  position: absolute;
+  z-index: 1;
+  border-top: var(--divider-gray) 1px dotted;
+}
+
+.popup-container .popup-content .popup-footer button {
+  display: flex;
+  outline: none;
+  border: none;
+  background-color: var(--default-background);
+  cursor: pointer;
+  color: var(--darker-blue);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 12px 32px;
+  border-right: var(--divider-gray) 1px solid;
+  border-left: var(--divider-gray) 1px solid;
+  z-index: 2;
+  transition: 0.1s ease-in-out;
+}
+
+.popup-container .popup-content .popup-footer button:hover {
+  background-color: var(--lighter-gray);
+  color: var(--blue)
+}
+
+
 @keyframes spin {
   from {
     transform: rotate(0turn);
   }
+
   to {
     transform: rotate(1turn);
   }
 }
 
+@keyframes zoomIn {
+  from {
+    transform: scale(0.1, 0.1);
+  }
+
+  to {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

@@ -1,6 +1,5 @@
 import { allowSpecialCharactersInUsername } from '../components/globalVariables';
 import { Buffer } from 'buffer';
-import { UNSAFE_enhanceManualRouteObjects } from 'react-router';
 
 
 export const isUsernameValid = (value) => {
@@ -86,6 +85,26 @@ export const isInputValidShowErrors = (e, type) => {
     else if (type === "username") {
         validateData = isUsernameValid(e.target.value);
     }
+    else if (type === "password") {
+        // get the password inputs
+        const password = document.querySelector("#user-new-password-settings");
+        const passwordConfirm = document.querySelector("#user-new-password-confirm-settings");
+
+        // check if the password is valid
+        validateData = doPasswordsMatch(password.value, passwordConfirm.value);
+
+        // add error class if passwords don't match
+        if (!validateData.status) {
+            password.classList.add("error");
+            passwordConfirm.classList.add("error");
+        } else {
+            password.classList.remove("error");
+            passwordConfirm.classList.remove("error");
+        }
+
+        console.log(validateData)
+        return validateData.value;
+    }
 
     // if email is valid and input has error class, remove error class
     if (validateData.status && e.target.classList.contains("error")) {
@@ -136,10 +155,69 @@ export const isUpdateValid = (data) => {
         delete updateObject.user_email;
     }
 
-    // if there is no valid data, return false
+    // check if there is any data to update than the user_id
+    if (Object.keys(updateObject).length <= 1) {
+        return {
+            status: false,
+            value: updateObject
+        };
+    }
+
     // otherwise return true
     return {
-        status: !Object.keys(updateObject).length == 0,
+        status: true,
         value: updateObject
     };
+}
+
+export const isPasswordUpdateValid = (data) => {
+    const user_old_password = document.querySelector("#user-old-password-settings").value.trim();
+    const user_new_password = document.querySelector("#user-new-password-settings").value.trim();
+    const user_new_password_confirm = document.querySelector("#user-new-password-confirm-settings").value.trim();
+
+    let updateObject = {};
+
+    updateObject.user_id = data.user_id;
+
+    if (!updateObject.user_id) {
+        return {
+            status: false,
+            value: updateObject
+        };
+    }
+
+    // first check if data is valid
+    if (isPasswordValid(user_old_password).status
+        && isPasswordValid(user_new_password).status
+        && isPasswordValid(user_new_password_confirm).status
+        && user_new_password === user_new_password_confirm) {
+        updateObject.user_old_password = user_old_password;
+        updateObject.user_new_password = user_new_password;
+        updateObject.user_repeat_new_password = user_new_password_confirm;
+    }
+
+    // check if object contains any data other than user_id
+    if (Object.keys(updateObject).length <= 1) {
+        return {
+            status: false,
+            value: updateObject
+        };
+    }
+
+    // otherwise return true
+    return {
+        status: true,
+        value: updateObject
+    };
+}
+
+export const doPasswordsMatch = (pass1, pass2) => {
+    let state = true;
+    // check if the passwords match
+    if (pass1 !== pass2 || !(isPasswordValid(pass1).status && isPasswordValid(pass2).status)) {
+        state = false;
+    }
+
+    // return the state and the passwords
+    return { status: state, value: [pass1, pass2] };
 }
