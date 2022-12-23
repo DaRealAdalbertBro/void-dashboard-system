@@ -1,6 +1,7 @@
 module.exports = function (app, db_connection) {
     const utils = require('../../utils/proceedData.js')(db_connection);
     const CONFIG = require('../../config.json');
+    const fs = require('fs');
 
     app.post('/api/post/updateuser', function (request, response) {
         const user_id = request.body.user_id;
@@ -14,6 +15,17 @@ module.exports = function (app, db_connection) {
         const user_permissions = request.body.user_permissions;
         const user_banner_color = request.body.user_banner_color;
 
+        // TODO: fix this - returns empty object
+        const user_avatar_file = request.body.user_avatar_file;
+        console.log(user_avatar_file)
+
+        // try {
+        //     const data = fs.readFileSync(user_avatar_file, 'utf8');
+        //     console.log(data);
+        //   } catch (err) {
+        //     console.error(err);
+        //   }
+        
         let updateObject = {};
 
         // check if user exists in request body

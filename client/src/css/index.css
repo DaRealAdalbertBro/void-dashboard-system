@@ -20,6 +20,7 @@
   --darker-blue: #007592;
   --green: #2c7a6f;
   --green-hover: #3FB6A3;
+  --scrollbar-thumb-color: #5e5a76;
 }
 
 body {
@@ -40,6 +41,21 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px var(--default-background) inset !important;
   -webkit-text-fill-color: var(--lighter-text) !important;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--default-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(180deg, #860f86 0%, rgb(79, 2, 131) 99%);
+  box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
+  border-radius: 4px;
+}
+
 
 .login-container {
   width: 100%;

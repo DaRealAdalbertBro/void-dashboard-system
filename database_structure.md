@@ -19,6 +19,6 @@ CREATE TABLE IF NOT EXISTS `users` (
     `user_password_hash` VARCHAR(255) NOT NULL,
     `user_permissions` TINYINT NOT NULL DEFAULT 0,
     `user_avatar_url` VARCHAR(255) NOT NULL DEFAULT '/assets/images/avatars/default.webp',
-    `user_banner_color` VARCHAR(64) NOT NULL DEFAULT "[19,113,147]";
+    `user_banner_color` VARCHAR(64) NOT NULL DEFAULT "[19,113,147]"
 );
 ```

@@ -33,7 +33,7 @@
     height: 200px;
     border-radius: 100%;
     object-fit: cover;
-    background-color: var(--default-background);
+    background-color: transparent;
     box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 92px 4px;
 }
 
@@ -166,24 +166,32 @@
     height: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     gap: 24px;
     flex-wrap: wrap;
+    flex: 1 1 20%;
 }
 
 .profile-container .profile-bottom .box-wrapper .box {
-    width: auto;
-    height: auto;
+    min-width: 100px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 56px;
     background-color: var(--gray);
     border-radius: 12px;
     box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 24px 4px;
     transition: 0.1s;
+}
+
+.profile-container .profile-bottom .box-wrapper .box .box-header {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .profile-container .profile-bottom .box-wrapper .box#save,
@@ -197,7 +205,7 @@
 
 .profile-container .profile-bottom .box-wrapper .box h2 {
     font-size: 1.7rem;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info {
@@ -206,6 +214,7 @@
     justify-content: center;
     align-items: center;
     gap: 24px;
+    width: 100%;
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info .data-wrapper {
@@ -289,13 +298,23 @@
 }
 
 .error {
-    color: var(--red)!important;
+    color: var(--red) !important;
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info input.user-password-settings {
     display: flex;
     width: 100%;
     min-width: 124px;
+}
+
+.submit-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: auto;
 }
 
 .settings-submit-button {
@@ -314,6 +333,7 @@
     transition: 0.1s;
     cursor: pointer;
     opacity: 0.8;
+    margin-top: 12px;
 }
 
 .settings-submit-button.disabled {
@@ -327,4 +347,106 @@
 
 .settings-submit-button:hover {
     opacity: 1;
+}
+
+/* PROFILE CHANGE AVATAR */
+.box .user-info .avatar-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.box .user-info .avatar-wrapper .avatar-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+.box .user-info .avatar-wrapper .avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.box .user-info .avatar-wrapper .avatar-upload input[type=file] {
+    display: none;
+}
+
+.box .user-info .avatar-wrapper .avatar-upload .avatar-upload-button,
+.box .user-info .avatar-wrapper .avatar-preview .avatar-preview-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 8px;
+    width: 172px;
+    height: 172px;
+    background-color: var(--default-background);
+    color: var(--lighter-text);
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: 400;
+    letter-spacing: 1px;
+    transition: 0.1s;
+    cursor: pointer;
+    border-radius: 12px;
+    gap: 16px;
+}
+
+.box .user-info .avatar-wrapper .avatar-preview img {
+    width: 124px;
+    height: 124px;
+    border-radius: 50%;
+}
+
+.box .user-info .avatar-wrapper .avatar-preview .avatar-preview-image {
+    cursor: default;
+}
+
+.box .user-info .avatar-wrapper .avatar-upload .avatar-upload-button p {
+    opacity: 0.7;
+    transition: 0.1s ease-in-out;
+}
+
+.box .user-info .avatar-wrapper .avatar-upload .avatar-upload-button:hover p {
+    opacity: 1;
+}
+
+.box .user-info .avatar-wrapper .avatar-upload .avatar-upload-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background-color: var(--darker-blue);
+    color: var(--lighter-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.1s;
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+.box .user-info .avatar-wrapper .avatar-upload .avatar-upload-button:hover .avatar-upload-icon {
+    opacity: 1;
+}
+
+.box .user-info .avatar-wrapper .avatar-upload .avatar-upload-icon svg {
+    font-size: 32px;
+    color: var(--default-text);
 }

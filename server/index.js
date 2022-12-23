@@ -29,7 +29,9 @@ app.use(cors({
 console.log("Setting up cookies...")
 // use body-parser and cookie-parser for session
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
+// set body-parser limit to 8mb
+app.use(bodyParser.json({ limit: "8mb" }));
+app.use(bodyParser.urlencoded({ limit: "8mb", extended: true, parameterLimit: 1000000 }));
 
 console.log("Setting up session...")
 // create session that expires in 24 hours

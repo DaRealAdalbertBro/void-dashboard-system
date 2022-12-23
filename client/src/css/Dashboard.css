@@ -136,6 +136,7 @@
     flex-direction: column;
     user-select: none;
     z-index: 1000;
+    position: fixed;
 }
 
 .dashboard-container .dashboard-left-bar .dashboard-header-title {

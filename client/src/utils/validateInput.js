@@ -1,7 +1,6 @@
 import { allowSpecialCharactersInUsername } from '../components/globalVariables';
 import { Buffer } from 'buffer';
 
-
 export const isUsernameValid = (value) => {
     // look for special characters if enabled
     if (!allowSpecialCharactersInUsername) {
@@ -85,13 +84,15 @@ export const isInputValidShowErrors = (e, type) => {
     else if (type === "username") {
         validateData = isUsernameValid(e.target.value);
     }
-    else if (type === "password") {
+    else if (type === "password_match") {
         // get the password inputs
         const password = document.querySelector("#user-new-password-settings");
         const passwordConfirm = document.querySelector("#user-new-password-confirm-settings");
 
         // check if the password is valid
         validateData = doPasswordsMatch(password.value, passwordConfirm.value);
+
+        console.log(validateData)
 
         // add error class if passwords don't match
         if (!validateData.status) {
@@ -102,12 +103,14 @@ export const isInputValidShowErrors = (e, type) => {
             passwordConfirm.classList.remove("error");
         }
 
-        console.log(validateData)
         return validateData.value;
+    }
+    else if (type === "password") {
+        validateData = isPasswordValid(e.target.value);
     }
 
     // if email is valid and input has error class, remove error class
-    if (validateData.status && e.target.classList.contains("error")) {
+    if ((validateData.status && e.target.classList.contains("error")) || e.target.value.length === 0) {
         e.target.classList.remove("error");
     } else if (!validateData.status && !e.target.classList.contains("error")) {
         e.target.classList.add("error");
@@ -135,7 +138,7 @@ export const isUpdateValid = (data) => {
 
     // first check if data is valid
     if (isUsernameValid(user_name).status
-        || isTagValid(user_tag).status) {
+        && isTagValid(user_tag).status) {
         updateObject.user_name = user_name;
         updateObject.user_tag = user_tag;
     }
@@ -169,6 +172,35 @@ export const isUpdateValid = (data) => {
         value: updateObject
     };
 }
+
+// TODO - fix returning empty object 
+export const isFileUpdateValid = (data, image) => {
+    const formData = new FormData();
+
+
+    if (!data.user_id) {
+        return {
+            status: false,
+            value: formData
+        };
+    }
+
+    formData.append("user_id", data.user_id);
+
+    if (image) {
+        console.log(image)
+        // const stream = fs.createReadStream(image.path);
+        formData.append("user_avatar_file", image);
+    }
+
+    // otherwise return true
+    return {
+        status: true,
+        value: formData,
+        headers: "Content-Type: multipart/form-data"
+    };
+}
+
 
 export const isPasswordUpdateValid = (data) => {
     const user_old_password = document.querySelector("#user-old-password-settings").value.trim();
@@ -220,4 +252,26 @@ export const doPasswordsMatch = (pass1, pass2) => {
 
     // return the state and the passwords
     return { status: state, value: [pass1, pass2] };
+}
+
+export const isFileValid = (file) => {
+
+    // check if file is valid
+    if (!file) {
+        return { status: false, value: file };
+    }
+
+    // check if the file has higher than 8mb
+    if (file.size > 8000000) {
+        return { status: false, value: file };
+    }
+
+    // check if the file is an image
+    if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/gif"
+        && file.type !== "image/jfif" && file.type !== "image/bmp" && file.type !== "image/webp") {
+        return { status: false, value: file };
+    }
+
+    // otherwise return true
+    return { status: true, value: file };
 }

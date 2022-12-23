@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.2.1",
     "buffer": "^6.0.3",
+    "fs": "^0.0.1-security",
     "install": "^0.13.0",
     "npm": "^9.2.0",
     "react": "^18.2.0",
