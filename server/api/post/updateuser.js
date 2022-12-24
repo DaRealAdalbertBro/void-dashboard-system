@@ -1,9 +1,12 @@
+const { snoflakeIdCreatedAt } = require('../../utils/generateID.js');
+
 module.exports = function (app, db_connection, upload) {
     const utils = require('../../utils/proceedData.js')(db_connection);
     const CONFIG = require('../../config.json');
 
+    // upload.single is used to upload a single file 
     app.post('/api/post/updateuser', upload.single('user_avatar_file'), function (request, response) {
-        const user_id = request.body.user_id;
+        let user_id = request.body.user_id;
         const user_name = request.body.user_name;
         const user_tag = request.body.user_tag;
         const user_email = request.body.user_email;
@@ -11,8 +14,14 @@ module.exports = function (app, db_connection, upload) {
         const user_new_password = request.body.user_new_password;
         const user_repeat_new_password = request.body.user_repeat_new_password;
         let user_avatar_url = request.body.user_avatar_url;
-        const user_permissions = request.body.user_permissions;
+        let user_permissions = request.body.user_permissions;
         const user_banner_color = request.body.user_banner_color;
+
+        try {
+            user_id = parseInt(user_id);
+        } catch (error) {
+            return response.send({ status: 0, message: CONFIG.messages.USER_NOT_FOUND });
+        }
 
         if (request.file) {
             const url = request.protocol + '://' + request.get('host')
@@ -119,6 +128,13 @@ module.exports = function (app, db_connection, upload) {
             // check if permissions are valid
             // check if permissions are not the same as the current ones
             if (user_permissions && user_permissions !== result[0][CONFIG.database.users_table_columns.user_permissions]) {
+                try {
+                    user_permissions = parseInt(user_permissions);
+                } 
+                catch (error) {
+                    console.log(error);
+                }
+                
                 updateObject.user_permissions = user_permissions;
             }
 
@@ -137,7 +153,8 @@ module.exports = function (app, db_connection, upload) {
                     user_email: user_email || result[0][CONFIG.database.users_table_columns.user_email],
                     user_avatar_url: user_avatar_url || result[0][CONFIG.database.users_table_columns.user_avatar_url],
                     user_permissions: user_permissions || result[0][CONFIG.database.users_table_columns.user_permissions],
-                    user_banner_color: user_banner_color || result[0][CONFIG.database.users_table_columns.user_banner_color]
+                    user_banner_color: user_banner_color || result[0][CONFIG.database.users_table_columns.user_banner_color],
+                    user_created_at: snoflakeIdCreatedAt(user_id || result[0][CONFIG.database.users_table_columns.user_id]),
                 }
 
                 // store new user data in session

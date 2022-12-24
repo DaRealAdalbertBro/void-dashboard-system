@@ -188,16 +188,12 @@ export const isFileUpdateValid = (data, image) => {
 
         formData.append("user_id", data.user_id);
 
-        console.log("Is file valid? " + isFileValid(image).status)
-
         if (isFileValid(image).status) {
             formData.append("user_avatar_file", image);
 
             // create image element with src of image
             const imgElement = document.createElement("img");
             imgElement.src = URL.createObjectURL(image);
-
-            console.log(imgElement)
 
             imgElement.onload = () => {
                 // get image average coloG

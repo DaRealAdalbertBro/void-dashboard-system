@@ -61,7 +61,6 @@ const Profile = () => {
         
         Axios.post("http://localhost:3001/api/post/updateuser", updateValid.value, { headers: { ...updateValid.headers } })
             .then((response) => {
-                console.log(response.data)
                 // if update was successful
                 if (response.data.status) {
 
@@ -284,8 +283,6 @@ const Profile = () => {
                                                                     if (isFileValid(e.currentTarget.files[0]).status) {
                                                                         // allow save button
                                                                         setCanSaveAvatar(true);
-
-                                                                        console.log(e.currentTarget.files[0])
 
                                                                         // set preview
                                                                         setAvatarPreview(URL.createObjectURL(e.currentTarget.files[0]));

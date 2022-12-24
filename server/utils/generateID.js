@@ -52,6 +52,12 @@ function createSnowflakeId() {
 };
 
 function snoflakeIdCreatedAt(snowflakeID) {
+    try {
+        snowflakeID = parseInt(snowflakeID);
+    } catch (error) {
+        console.log(error);
+    }
+    
     let binary = toBinary(snowflakeID);
     let timeSinceEpoch = toDecimal(binary.slice(0, -22)) + epoch;
     let timestampToDate = new Date(timeSinceEpoch);
