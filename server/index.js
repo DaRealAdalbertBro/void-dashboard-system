@@ -13,6 +13,7 @@ const session = require('express-session');
 
 // create express app
 const app = express();
+const CDN_DIR = 'public/uploads/';
 
 app.use(express.json());
 
@@ -32,6 +33,9 @@ app.use(cookieParser());
 // set body-parser limit to 8mb
 app.use(bodyParser.json({ limit: "8mb" }));
 app.use(bodyParser.urlencoded({ limit: "8mb", extended: true, parameterLimit: 1000000 }));
+
+// express static means that the files in the folder are accessible from the browser
+app.use('/public', express.static('public'));
 
 console.log("Setting up session...")
 // create session that expires in 24 hours
@@ -62,12 +66,40 @@ db_connection.connect((error) => {
     }
 });
 
+// set up multer
+const uuid = require('uuid').v4;
+const multer = require('multer');
+
+// set up storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, CDN_DIR);
+    },
+    filename: (req, file, cb) => {
+        const fileName = file.originalname.toLowerCase().split(' ').join('-');
+        cb(null, uuid() + '-' + fileName)
+    }
+});
+
+// set up upload
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 8000000 },
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.includes('image') || file.mimetype.includes('gif')) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only image and gif formats are allowed!'));
+        }
+    }
+});
 
 // POST
 require("./api/post/register")(app, db_connection);
 require("./api/post/login")(app, db_connection);
 require("./api/post/logout")(app);
-require("./api/post/updateuser")(app, db_connection);
+require("./api/post/updateuser")(app, db_connection, upload);
 
 // GET
 require("./api/get/userinfo")(app);
@@ -80,3 +112,17 @@ app.listen(process.env.SERVER_PORT || 3001, () => {
 });
 
 
+app.use((req, res, next) => {
+
+    // error goes with next() method, but check if there is an error first
+    setImmediate(() => {
+        next(new Error('Could not found the requested resource!'));
+    });
+});
+
+
+app.use(function (err, req, res, next) {
+    console.error(err.message);
+    if (!err.statusCode) err.statusCode = 500;
+    res.status(err.statusCode).send(err.message);
+});

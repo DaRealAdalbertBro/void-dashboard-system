@@ -14,8 +14,7 @@ export function getAverageColor(imageElement, ratio = 1) {
     let data, length;
     let i = -4;         // start at -4 so first iteration is 0
     let count = 0;      // keep track of number of pixels
-
-
+    
     try {
         // get image data
         data = context.getImageData(0, 0, width, height)

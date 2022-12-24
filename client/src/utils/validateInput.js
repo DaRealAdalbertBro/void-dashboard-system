@@ -1,5 +1,6 @@
-import { allowSpecialCharactersInUsername } from '../components/globalVariables';
+import { allowSpecialCharactersInUsername, defaultProfilePicture } from '../components/globalVariables';
 import { Buffer } from 'buffer';
+import { getAverageColor } from './utils';
 
 export const isUsernameValid = (value) => {
     // look for special characters if enabled
@@ -173,32 +174,63 @@ export const isUpdateValid = (data) => {
     };
 }
 
-// TODO - fix returning empty object 
 export const isFileUpdateValid = (data, image) => {
-    const formData = new FormData();
+    return new Promise((resolve, reject) => {
+        // create form data
+        const formData = new FormData();
 
+        if (!data.user_id) {
+            return {
+                status: false,
+                value: {}
+            };
+        }
 
-    if (!data.user_id) {
-        return {
-            status: false,
-            value: formData
-        };
-    }
+        formData.append("user_id", data.user_id);
 
-    formData.append("user_id", data.user_id);
+        console.log("Is file valid? " + isFileValid(image).status)
 
-    if (image) {
-        console.log(image)
-        // const stream = fs.createReadStream(image.path);
-        formData.append("user_avatar_file", image);
-    }
+        if (isFileValid(image).status) {
+            formData.append("user_avatar_file", image);
 
-    // otherwise return true
-    return {
-        status: true,
-        value: formData,
-        headers: "Content-Type: multipart/form-data"
-    };
+            // create image element with src of image
+            const imgElement = document.createElement("img");
+            imgElement.src = URL.createObjectURL(image);
+
+            console.log(imgElement)
+
+            imgElement.onload = () => {
+                // get image average coloG
+                const averageColor = getAverageColor(imgElement, 1);
+
+                // append the average color to the form data
+                formData.append("user_banner_color", `[${averageColor.R},${averageColor.G},${averageColor.B}]`);
+
+                // check if the image is different from the current image
+                if (data.user_avatar_file !== image.name) {
+                    return resolve({
+                        status: true,
+                        value: formData
+                    });
+
+                }
+
+                // // revoke the image url
+                // URL.revokeObjectURL(imgElement.src);
+
+                // imgElement.remove();
+
+                return reject({
+                    status: false,
+                    value: {}
+                });
+            }
+
+        } else {
+            return reject({ status: false, value: {} })
+        }
+
+    }); // end of promise
 }
 
 

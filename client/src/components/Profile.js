@@ -29,7 +29,7 @@ const Profile = () => {
     const [popupTitle, setPopupTitle] = useState("Warning");
     const [popupMessage, setPopupMessage] = useState("Something went wrong... Try again later!");
 
-    const submitUserSettings = (data, type = "userinfo") => {
+    const submitUserSettings = async (data, type = "userinfo") => {
 
         // check if settings can be saved
         if ((type === "userinfo" && !canSaveSettings)
@@ -41,24 +41,27 @@ const Profile = () => {
         let updateValid;
 
         if (type === "userinfo") {
-            updateValid = isUpdateValid(data);
+            updateValid = await isUpdateValid(data);
         } else if (type === "password") {
-            updateValid = isPasswordUpdateValid(data);
+            updateValid = await isPasswordUpdateValid(data);
         } else if (type === "avatar") {
-            updateValid = isFileUpdateValid(data, avatarFile);
+            updateValid = await isFileUpdateValid(data, avatarFile).then((response) => {
+                return response;
+            }).catch((error) => {
+                return error;
+            });
         }
 
-        if (!updateValid.status) {
+        if (await !updateValid.status) {
             setShowPopup(true);
             setPopupTitle("Warning");
             setPopupMessage("Something went wrong... Try again later! Could not update user info!");
             return false;
         }
-
-        console.log(updateValid.headers)
-
-        Axios.post("http://localhost:3001/api/post/updateuser", updateValid.value, { headers: { ...updateValid.headers }})
+        
+        Axios.post("http://localhost:3001/api/post/updateuser", updateValid.value, { headers: { ...updateValid.headers } })
             .then((response) => {
+                console.log(response.data)
                 // if update was successful
                 if (response.data.status) {
 
@@ -119,7 +122,8 @@ const Profile = () => {
             const banner = document.querySelector(".profile-container .profile");
 
             if (data && data.user
-                && (data.user.user_banner_color == null || data.user.user_banner_color == "[90,113,147]")) {
+                && (data.user.user_banner_color == null || data.user.user_banner_color == "[90,113,147]")
+                && data.user.user_avatar_url != defaultProfilePicture) {
                 // set banner color to user's banner color
                 const averageColor = getAverageColor(avatarElement, 1);
 
@@ -280,6 +284,7 @@ const Profile = () => {
                                                                     if (isFileValid(e.currentTarget.files[0]).status) {
                                                                         // allow save button
                                                                         setCanSaveAvatar(true);
+
                                                                         console.log(e.currentTarget.files[0])
 
                                                                         // set preview
@@ -315,10 +320,15 @@ const Profile = () => {
                                                             <p>Save</p>
                                                         </div>
 
-                                                        <div className="settings-submit-button" style={{ backgroundColor: "var(--blue)" }} onClick={() => {
-                                                            // reset avatar preview
-                                                            const newAvatarUrl = new File(["/assets/images/avatars/"], "default.webp", { type: "image/webp" });
-                                                            setAvatarPreview(URL.createObjectURL(newAvatarUrl));
+                                                        <div className="settings-submit-button" style={{ backgroundColor: "var(--blue)" }} onClick={async () => {
+                                                            // convert default profile picture to base64
+                                                            let url = defaultProfilePicture;
+                                                            const newAvatarUrl = await fetch(url)
+                                                                .then(response => response.blob())
+                                                                .then(blob => blob && new File([blob], "default.webp", { type: "image/webp" }));
+
+                                                            // // set preview
+                                                            setAvatarPreview(newAvatarUrl);
                                                             setAvatarFile(newAvatarUrl);
 
                                                             // disable save button
