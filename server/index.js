@@ -17,8 +17,8 @@ const CDN_DIR = 'public/uploads/';
 
 app.use(express.json());
 
-console.log("-----------------------------------")
-console.log("Setting up cors...")
+console.log("-----------------------------------");
+console.log("Setting up cors...");
 
 // set cors options
 app.use(cors({
@@ -27,7 +27,7 @@ app.use(cors({
     credentials: true
 }));
 
-console.log("Setting up cookies...")
+console.log("Setting up cookies...");
 // use body-parser and cookie-parser for session
 app.use(cookieParser());
 // set body-parser limit to 8mb
@@ -37,7 +37,7 @@ app.use(bodyParser.urlencoded({ limit: "8mb", extended: true, parameterLimit: 10
 // express static means that the files in the folder are accessible from the browser
 app.use('/public', express.static('public'));
 
-console.log("Setting up session...")
+console.log("Setting up session...");
 // create session that expires in 24 hours
 app.use(session({
     key: "userId",
@@ -49,7 +49,7 @@ app.use(session({
     },
 }));
 
-console.log("Connecting to database...")
+console.log("Connecting to database...");
 // create connection to database
 const db_connection = mysql.createConnection({
     host: process.env.DATABASE_HOST,
@@ -61,7 +61,7 @@ const db_connection = mysql.createConnection({
 // check if connection to database is successful
 db_connection.connect((error) => {
     if (error) {
-        console.log("An error occurred while connecting to the database:")
+        console.log("An error occurred while connecting to the database:");
         console.log(error);
     }
 });
@@ -113,10 +113,12 @@ app.listen(process.env.SERVER_PORT || 3001, () => {
 
 
 app.use((req, res, next) => {
-
-    // error goes with next() method, but check if there is an error first
     setImmediate(() => {
-        next(new Error('Could not found the requested resource!'));
+        
+        // respond with This site can’t be reached error ERR_INVALID_RESPONSE and send it to client
+        const error = new Error();
+        error.statusCode = 410;
+        next(error);
     });
 });
 

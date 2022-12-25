@@ -1,4 +1,4 @@
-const { snoflakeIdCreatedAt } = require('../../utils/generateID.js');
+const { snowflakeIdCreatedAt } = require('../../utils/generateID.js');
 
 module.exports = function (app, db_connection, upload) {
     const utils = require('../../utils/proceedData.js')(db_connection);
@@ -134,7 +134,7 @@ module.exports = function (app, db_connection, upload) {
                 catch (error) {
                     console.log(error);
                 }
-                
+
                 updateObject.user_permissions = user_permissions;
             }
 
@@ -154,7 +154,7 @@ module.exports = function (app, db_connection, upload) {
                     user_avatar_url: user_avatar_url || result[0][CONFIG.database.users_table_columns.user_avatar_url],
                     user_permissions: user_permissions || result[0][CONFIG.database.users_table_columns.user_permissions],
                     user_banner_color: user_banner_color || result[0][CONFIG.database.users_table_columns.user_banner_color],
-                    user_created_at: snoflakeIdCreatedAt(user_id || result[0][CONFIG.database.users_table_columns.user_id]),
+                    user_created_at: snowflakeIdCreatedAt(user_id || result[0][CONFIG.database.users_table_columns.user_id]),
                 }
 
                 // store new user data in session

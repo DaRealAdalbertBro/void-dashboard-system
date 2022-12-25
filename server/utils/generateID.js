@@ -51,13 +51,13 @@ function createSnowflakeId() {
     return snowflakeID;
 };
 
-function snoflakeIdCreatedAt(snowflakeID) {
+function snowflakeIdCreatedAt(snowflakeID) {
     try {
         snowflakeID = parseInt(snowflakeID);
     } catch (error) {
         console.log(error);
     }
-    
+
     let binary = toBinary(snowflakeID);
     let timeSinceEpoch = toDecimal(binary.slice(0, -22)) + epoch;
     let timestampToDate = new Date(timeSinceEpoch);
@@ -65,4 +65,4 @@ function snoflakeIdCreatedAt(snowflakeID) {
     return { timestamp: timeSinceEpoch, date: timestampToDate };
 }
 
-module.exports = { createSnowflakeId, snoflakeIdCreatedAt };
+module.exports = { createSnowflakeId, snowflakeIdCreatedAt };

@@ -3,7 +3,6 @@ module.exports = function (app, db_connection) {
     const createSnowflakeId = require('../../utils/generateID.js').createSnowflakeId;
     const createNewUserTag = require('../../utils/generateTag.js').createNewUserTag;
     const utils = require('../../utils/proceedData.js')(db_connection);
-    const bcrypt = require('bcrypt');
     const CONFIG = require('../../config.json');
 
 

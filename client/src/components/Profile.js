@@ -1,4 +1,4 @@
-import { useNavigate, use } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import useFetch from "./useFetch";
 import { useEffect, useState } from "react";
 import { FcPlus, FcServices } from "react-icons/fc";
@@ -16,7 +16,7 @@ import { addPaddingToStringNumber, getAverageColor, averageColorToGradient } fro
 import { CustomPopup } from "./CustomPopup";
 
 const Profile = () => {
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     let { data, isPending, error } = useFetch("/api/get/userinfo");
     const [userRole, setUserRole] = useState("User");
@@ -121,8 +121,8 @@ const Profile = () => {
             const banner = document.querySelector(".profile-container .profile");
 
             if (data && data.user
-                && (data.user.user_banner_color == null || data.user.user_banner_color == "[90,113,147]")
-                && data.user.user_avatar_url != defaultProfilePicture) {
+                && (data.user.user_banner_color == null || data.user.user_banner_color === "[90,113,147]")
+                && data.user.user_avatar_url !== defaultProfilePicture) {
                 // set banner color to user's banner color
                 const averageColor = getAverageColor(avatarElement, 1);
 
