@@ -13,9 +13,9 @@ export const isUsernameValid = (value) => {
         }
 
         // check for 3 dots, dashes or underscores in a row to prevent abuse
-        if ((value[value.length - 1] == '.' && value[value.length - 2] == '.' && value[value.length - 3] == '.')
-            || (value[value.length - 1] == '-' && value[value.length - 2] == '-' && value[value.length - 3] == '-')
-            || (value[value.length - 1] == '_' && value[value.length - 2] == '_' && value[value.length - 3] == '_')) {
+        if ((value[value.length - 1] === '.' && value[value.length - 2] === '.' && value[value.length - 3] === '.')
+            || (value[value.length - 1] === '-' && value[value.length - 2] === '-' && value[value.length - 3] === '-')
+            || (value[value.length - 1] === '_' && value[value.length - 2] === '_' && value[value.length - 3] === '_')) {
             // remove the last character if the repetition is found
             return { status: false, value: value.slice(0, -1) };
         }
@@ -51,7 +51,7 @@ export const isPasswordValid = (value) => {
         return { status: false, value: value.slice(0, 255) };
     }
 
-    // return thhe value if all checks passed
+    // return the value if all checks passed
     return { status: true, value: value };
 };
 

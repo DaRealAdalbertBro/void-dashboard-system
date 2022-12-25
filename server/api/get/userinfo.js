@@ -1,4 +1,4 @@
-const { snoflakeIdCreatedAt } = require('../../utils/generateID');
+const { snowflakeIdCreatedAt } = require('../../utils/generateID');
 
 module.exports = function (app) {
     const CONFIG = require('../../config.json');
@@ -9,7 +9,7 @@ module.exports = function (app) {
             // create user object
             const userObject = {
                 ...request.session.user,
-                user_created_at: snoflakeIdCreatedAt(request.session.user.user_id)
+                user_created_at: snowflakeIdCreatedAt(request.session.user.user_id)
             }
 
             // send user object
