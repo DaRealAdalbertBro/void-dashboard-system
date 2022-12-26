@@ -1,6 +1,5 @@
-import { allowSpecialCharactersInUsername, defaultProfilePicture } from '../components/globalVariables';
+import { allowSpecialCharactersInUsername } from '../components/globalVariables';
 import { Buffer } from 'buffer';
-import { getAverageColor } from './utils';
 
 export const isUsernameValid = (value) => {
     // look for special characters if enabled
@@ -76,38 +75,44 @@ export const isInputValidShowErrors = (e, type) => {
     // validate email
     let validateData;
 
-    if (type === "email") {
-        validateData = isEmailValid(e.target.value);
-    }
-    else if (type === "tag") {
-        validateData = isTagValid(e.target.value);
-    }
-    else if (type === "username") {
-        validateData = isUsernameValid(e.target.value);
-    }
-    else if (type === "password_match") {
-        // get the password inputs
-        const password = document.querySelector("#user-new-password-settings");
-        const passwordConfirm = document.querySelector("#user-new-password-confirm-settings");
+    switch (type) {
+        case "email":
+            validateData = isEmailValid(e.target.value);
+            break;
+        case "tag":
+            validateData = isTagValid(e.target.value);
+            break;
 
-        // check if the password is valid
-        validateData = doPasswordsMatch(password.value, passwordConfirm.value);
+        case "username":
+            validateData = isUsernameValid(e.target.value);
+            break;
 
-        console.log(validateData)
+        case "password_match":
+            // get the password inputs
+            const password = document.querySelector("#user-new-password-settings");
+            const passwordConfirm = document.querySelector("#user-new-password-confirm-settings");
 
-        // add error class if passwords don't match
-        if (!validateData.status) {
-            password.classList.add("error");
-            passwordConfirm.classList.add("error");
-        } else {
-            password.classList.remove("error");
-            passwordConfirm.classList.remove("error");
-        }
+            // check if the password is valid
+            validateData = doPasswordsMatch(password.value, passwordConfirm.value);
 
-        return validateData.value;
-    }
-    else if (type === "password") {
-        validateData = isPasswordValid(e.target.value);
+            // add error class if passwords don't match
+            if (!validateData.status) {
+                password.classList.add("error");
+                passwordConfirm.classList.add("error");
+            } else {
+                password.classList.remove("error");
+                passwordConfirm.classList.remove("error");
+            }
+
+            // return the passwords
+            return validateData.value;
+
+        case "password":
+            validateData = isPasswordValid(e.target.value);
+            break;
+
+        default:
+            break;
     }
 
     // if email is valid and input has error class, remove error class
@@ -120,156 +125,6 @@ export const isInputValidShowErrors = (e, type) => {
     return validateData.value;
 };
 
-
-export const isUpdateValid = (data) => {
-    const user_name = document.querySelector(".user-name-settings").value.trim() || data.user_name;
-    const user_tag = document.querySelector(".user-tag-settings").value.trim() || data.user_tag;
-    const user_email = document.querySelector(".user-email-settings").value.trim();
-
-    let updateObject = {};
-
-    updateObject.user_id = data.user_id;
-
-    if (!updateObject.user_id) {
-        return {
-            status: false,
-            value: updateObject
-        };
-    }
-
-    // first check if data is valid
-    if (isUsernameValid(user_name).status
-        && isTagValid(user_tag).status) {
-        updateObject.user_name = user_name;
-        updateObject.user_tag = user_tag;
-    }
-
-    if (isEmailValid(user_email).status) {
-        updateObject.user_email = user_email;
-    }
-
-    // if there is valid data, check if it is different from current data
-
-    if (updateObject.user_name === data.user_name && updateObject.user_tag === data.user_tag) {
-        delete updateObject.user_name;
-        delete updateObject.user_tag;
-    }
-
-    if (updateObject.user_email === data.user_email) {
-        delete updateObject.user_email;
-    }
-
-    // check if there is any data to update than the user_id
-    if (Object.keys(updateObject).length <= 1) {
-        return {
-            status: false,
-            value: updateObject
-        };
-    }
-
-    // otherwise return true
-    return {
-        status: true,
-        value: updateObject
-    };
-}
-
-export const isFileUpdateValid = (data, image) => {
-    return new Promise((resolve, reject) => {
-        // create form data
-        const formData = new FormData();
-
-        if (!data.user_id) {
-            return {
-                status: false,
-                value: {}
-            };
-        }
-
-        formData.append("user_id", data.user_id);
-
-        if (isFileValid(image).status) {
-            formData.append("user_avatar_file", image);
-
-            // create image element with src of image
-            const imgElement = document.createElement("img");
-            imgElement.src = URL.createObjectURL(image);
-
-            imgElement.onload = () => {
-                // get image average coloG
-                const averageColor = getAverageColor(imgElement, 1);
-
-                // append the average color to the form data
-                formData.append("user_banner_color", `[${averageColor.R},${averageColor.G},${averageColor.B}]`);
-
-                // check if the image is different from the current image
-                if (data.user_avatar_file !== image.name) {
-                    return resolve({
-                        status: true,
-                        value: formData
-                    });
-
-                }
-
-                // // revoke the image url
-                // URL.revokeObjectURL(imgElement.src);
-
-                // imgElement.remove();
-
-                return reject({
-                    status: false,
-                    value: {}
-                });
-            }
-
-        } else {
-            return reject({ status: false, value: {} })
-        }
-
-    }); // end of promise
-}
-
-
-export const isPasswordUpdateValid = (data) => {
-    const user_old_password = document.querySelector("#user-old-password-settings").value.trim();
-    const user_new_password = document.querySelector("#user-new-password-settings").value.trim();
-    const user_new_password_confirm = document.querySelector("#user-new-password-confirm-settings").value.trim();
-
-    let updateObject = {};
-
-    updateObject.user_id = data.user_id;
-
-    if (!updateObject.user_id) {
-        return {
-            status: false,
-            value: updateObject
-        };
-    }
-
-    // first check if data is valid
-    if (isPasswordValid(user_old_password).status
-        && isPasswordValid(user_new_password).status
-        && isPasswordValid(user_new_password_confirm).status
-        && user_new_password === user_new_password_confirm) {
-        updateObject.user_old_password = user_old_password;
-        updateObject.user_new_password = user_new_password;
-        updateObject.user_repeat_new_password = user_new_password_confirm;
-    }
-
-    // check if object contains any data other than user_id
-    if (Object.keys(updateObject).length <= 1) {
-        return {
-            status: false,
-            value: updateObject
-        };
-    }
-
-    // otherwise return true
-    return {
-        status: true,
-        value: updateObject
-    };
-}
 
 export const doPasswordsMatch = (pass1, pass2) => {
     let state = true;

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
 import Home from './components/Home';
-import Profile from './components/Profile';
-import RegisterPage from './components/RegisterPage';
+import Profile from './components/Profile/Profile';
+
+import LoginPage from './components/Auth/LoginPage';
+import RegisterPage from './components/Auth/RegisterPage';
 
 
 function App() {

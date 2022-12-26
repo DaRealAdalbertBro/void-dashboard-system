@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { BiGroup } from "react-icons/bi";
@@ -7,6 +7,7 @@ import { BsBoxArrowLeft } from "react-icons/bs";
 import { MdArrowDropDown } from "react-icons/md";
 
 import { defaultProfilePicture } from './globalVariables';
+
 
 import '../css/Dashboard.css';
 
@@ -61,7 +62,6 @@ const Dashboard = ({ componentToShow }) => {
         }
     }
 
-
     useEffect(() => {
         Axios.get('http://localhost:3001/api/get/userinfo').then((response) => {
             // if user is not logged in, redirect to login page
@@ -82,7 +82,7 @@ const Dashboard = ({ componentToShow }) => {
 
     useEffect(() => {
         const componentRef = componentToShow ? document.getElementById((componentToShow.type.name).toString().toLowerCase()) : document.getElementById("home");
-        
+
         if (componentRef) {
             componentRef.classList.add('active');
         }
@@ -160,7 +160,7 @@ const Dashboard = ({ componentToShow }) => {
                 <div className='dashboard-header-buttons'>
                     <div className='profile'>
                         <div className="small-profile-info" onClick={handleProfileDropdown}>
-                            <img src={profilePicture} onError={e => {e.currentTarget.src = defaultProfilePicture;e.currentTarget.onerror=null}} alt='profile' />
+                            <img src={profilePicture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} alt='profile' />
                             <p>{username}</p>
                             <MdArrowDropDown />
                         </div>
