@@ -54,10 +54,10 @@
     "session": {
         "session_key": "SESSION_ID",
         "proxy": false,
-        "rolling": false,
+        "rolling": true,
         "cookies": {
             "secure": false,
-            "expires": 604800000,
+            "expires": 345600000,
             "sameSite": "lax"
         }
     }
