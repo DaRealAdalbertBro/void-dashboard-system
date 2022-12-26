@@ -41,6 +41,24 @@
     "defaults": {
         "DEFAULT_AVATAR_URL": "/assets/images/default/avatar.webp",
         "DEFAULT_BANNER_COLOR": "[19,113,147]",
-        "DEFAULT_PERMISSIONS": 0
+        "DEFAULT_PERMISSIONS": 0,
+        "DEFAULT_MAX_FILE_SIZE": [
+            "8mb",
+            8388608
+        ],
+        "DEFAULT_PARAMETER_LIMIT": 1000,
+        "DEFAULT_CORS_ORIGIN": [
+            "http://localhost:3000"
+        ]
+    },
+    "session": {
+        "session_key": "SESSION_ID",
+        "proxy": false,
+        "rolling": false,
+        "cookies": {
+            "secure": false,
+            "expires": 604800000,
+            "sameSite": "lax"
+        }
     }
 }

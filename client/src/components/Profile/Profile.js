@@ -12,7 +12,7 @@ import { AiOutlineUpload } from "react-icons/ai";
 import { defaultProfilePicture } from '../globalVariables';
 
 // import css
-import "../../css/Profile.css";
+import "./Profile.css";
 
 // import utils
 import { isUsernameValid, isTagValid, isPasswordValid, isFileValid, isInputValidShowErrors } from "../../utils/validateInput";
@@ -363,6 +363,7 @@ const PasswordSettings = ({ data, popupContext, canSavePassword, setCanSavePassw
                             // check if passwords match
                             isInputValidShowErrors(e, "password_match");
 
+                            // check if can save
                             setCanSavePassword(isPasswordUpdateValid(data.user).status);
                         }} placeholder="New Password" className="user-password-settings" id="user-new-password-settings" minLength={8} maxLength={255} />
                     </div>
@@ -378,6 +379,7 @@ const PasswordSettings = ({ data, popupContext, canSavePassword, setCanSavePassw
                             // check if passwords match
                             isInputValidShowErrors(e, "password_match");
 
+                            // check if can save
                             setCanSavePassword(isPasswordUpdateValid(data.user).status);
                         }} placeholder="Repeat New Password" className="user-password-settings" id="user-new-password-confirm-settings" minLength={8} maxLength={255} />
                     </div>

@@ -15,6 +15,8 @@ const session = require('express-session');
 const app = express();
 const CDN_DIR = 'public/uploads/';
 
+const CONFIG = require('./config.json');
+
 app.use(express.json());
 
 console.log("-----------------------------------");
@@ -22,7 +24,9 @@ console.log("Setting up cors...");
 
 // set cors options
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    // Set cors origin to the origin in config.json
+    // ! WARNING - if the URL is not correct, the app will not work
+    origin: CONFIG.defaults.DEFAULT_CORS_ORIGIN,
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -31,21 +35,33 @@ console.log("Setting up cookies...");
 // use body-parser and cookie-parser for session
 app.use(cookieParser());
 // set body-parser limit to 8mb
-app.use(bodyParser.json({ limit: "8mb" }));
-app.use(bodyParser.urlencoded({ limit: "8mb", extended: true, parameterLimit: 1000000 }));
+app.use(bodyParser.json({ limit: CONFIG.defaults.DEFAULT_MAX_FILE_SIZE[0] }));
+app.use(bodyParser.urlencoded({
+    limit: CONFIG.defaults.DEFAULT_MAX_FILE_SIZE[0],
+    extended: true,
+    parameterLimit: 1000000
+}));
 
 // express static means that the files in the folder are accessible from the browser
 app.use('/public', express.static('public'));
 
 console.log("Setting up session...");
-// create session that expires in 24 hours
+
+// set proxy
+app.set('trust proxy', CONFIG.session.proxy);
+
+// create session that expires based on the expiration time in config.json
 app.use(session({
-    key: "userId",
-    secret: "A9bCV%Z+H'o`0,N(-q7,&{F_E<jIpHyEy>9bp^z?{T7'h|k+p{{BhAr[f<&b+35s^7B5E^/>hpbdGWa@Txi%n=ctxYwdc?=\")lcwY2ZQ'p}dzFtQ6]p'n*XrH(J`8|",
+    key: CONFIG.session.session_key,
+    secret: process.env.SESSION_SECRETS.split(" "),
     resave: false,
     saveUninitialized: false,
+    proxy: CONFIG.session.proxy,
+    rolling: CONFIG.session.rolling,
     cookie: {
-        expires: 60 * 60 * 24,
+        maxAge: CONFIG.session.cookies.expires,
+        secure: CONFIG.session.cookies.secure,  // set to true if your using https
+        sameSite: CONFIG.session.cookies.sameSite
     },
 }));
 
@@ -113,18 +129,32 @@ app.listen(process.env.SERVER_PORT || 3001, () => {
 
 
 app.use((req, res, next) => {
+    // setImmediate is used to prevent the error from being sent to the client before the response is sent to the client
     setImmediate(() => {
-        
         // respond with This site can’t be reached error ERR_INVALID_RESPONSE and send it to client
         const error = new Error();
-        error.statusCode = 410;
+
+        // if the url contains '/public/' then it is a 410 error
+        if (req.originalUrl.includes('/public/')) {
+            error.message = 'This file has been deleted or does not exist.';
+            error.statusCode = 410;
+        }
+        else {
+            // if the url does not contain '/public/' then it is a 404 error
+            error.message = 'This page does not exist.';
+            error.statusCode = 404;
+        }
         next(error);
     });
 });
 
-
 app.use(function (err, req, res, next) {
-    console.error(err.message);
     if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).send(err.message);
+
+    if (err) {
+        return res.status(err.statusCode).send({ ok: false });
+    }
+    else {
+        return res.status(200).send({ ok: true });
+    }
 });
