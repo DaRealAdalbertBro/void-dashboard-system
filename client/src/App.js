@@ -7,6 +7,7 @@ import Profile from './components/Profile/Profile';
 
 import LoginPage from './components/Auth/LoginPage';
 import RegisterPage from './components/Auth/RegisterPage';
+import NotFound from './components/InvalidPage/NotFound';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
             <Dashboard componentToShow={<Profile />} />
           } />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
 
       </div>

@@ -49,6 +49,8 @@ const Profile = () => {
     };
 
     useEffect(() => {
+        document.title = "My Profile | Void";
+        
         // get dominant color of profile picture
         const avatarElement = document.getElementById("profile-picture");
         if (!avatarElement) return;

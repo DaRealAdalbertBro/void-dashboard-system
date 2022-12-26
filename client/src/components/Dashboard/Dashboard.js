@@ -39,6 +39,9 @@ const Dashboard = ({ componentToShow }) => {
             return navigate('/');
         });
 
+        // set document title
+        document.title = 'Dashboard | Void';
+
     }, []);
 
     // handle navigation click
