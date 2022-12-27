@@ -146,7 +146,6 @@ input:-webkit-autofill:active {
 .login-container .login-box .login-error {
   color: #E76107;
   font-size: 0.8rem;
-  margin-bottom: 10px;
   display: flex;
   width: 90%;
   justify-content: flex-start;

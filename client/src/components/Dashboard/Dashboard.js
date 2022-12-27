@@ -1,6 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
+// import modules
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Axios from 'axios';
+
+// import icons
 import { BiGroup } from "react-icons/bi";
 import { FaBars, FaHome, FaUserAlt } from "react-icons/fa";
 import { BsBoxArrowLeft } from "react-icons/bs";
@@ -9,12 +11,10 @@ import { MdArrowDropDown } from "react-icons/md";
 // import dashboard methods
 import { defaultProfilePicture } from '../globalVariables';
 import { handleNavigationClick, handleProfileDropdown, handleProfileDropdownItemClick, handleClickOutsideProfileDropdown, handleLogout } from './dashboardMethods';
+import { getUserData } from '../../utils/utils';
 
-// import dashboard methods
+// import dashboard css
 import './Dashboard.css';
-
-// set axios to send cookies with requests
-Axios.defaults.withCredentials = true;
 
 const Dashboard = ({ componentToShow }) => {
     const navigate = useNavigate();
@@ -23,11 +23,15 @@ const Dashboard = ({ componentToShow }) => {
     const [permissionLevel, setPermissionLevel] = useState(0);
     const [profilePicture, setProfilePicture] = useState("");
 
-
+    // get user info from server
     useEffect(() => {
-        Axios.get('http://localhost:3001/api/get/userinfo').then((response) => {
+        // define abort controller
+        const controller = new AbortController();
+
+        // get user info from server
+        getUserData(controller).then((response) => {
             // if user is logged in, set user info
-            if (response.data.status) {
+            if (response.status) {
                 setUsername(response.data.user.user_name);
                 setEmail(response.data.user.user_email);
                 setPermissionLevel(response.data.user.user_permissions);
@@ -42,9 +46,11 @@ const Dashboard = ({ componentToShow }) => {
         // set document title
         document.title = 'Dashboard | Void';
 
-    }, []);
+        // cleanup, abort fetch request
+        return () => controller.abort();
+    }, [navigate]);
 
-    // handle navigation click
+    // handle left sidebar click
     useEffect(() => {
         // get navigation item that was clicked
         const componentRef = componentToShow ? document.getElementById((componentToShow.type.name).toString().toLowerCase()) : document.getElementById("home");
@@ -60,7 +66,6 @@ const Dashboard = ({ componentToShow }) => {
                 componentRef.classList.remove('active');
             }
         }
-
     }, [componentToShow]);
 
     return (

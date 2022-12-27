@@ -75,20 +75,22 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
 
 // check if user update is valid
 export const isUpdateValid = (data) => {
+    // get user data from input fields
     const user_name = document.querySelector(".user-name-settings").value.trim() || data.user_name;
     const user_tag = document.querySelector(".user-tag-settings").value.trim() || data.user_tag;
     const user_email = document.querySelector(".user-email-settings").value.trim();
 
     let updateObject = {};
 
-
-    if (!updateObject.user_id) {
+    // check if user_id exists
+    if (!data.user_id) {
         return {
             status: false,
             value: updateObject
         };
     }
 
+    // add user_id to updateObject
     updateObject.user_id = data.user_id;
 
     // first check if data is valid

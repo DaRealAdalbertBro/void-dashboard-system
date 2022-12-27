@@ -3,23 +3,23 @@ import Axios from 'axios'
 // Import the validation functions
 import { isUsernameValid, isEmailValid, isPasswordValid } from '../../utils/validateInput';
 
-// Set withCredentials to true to send cookies
-Axios.defaults.withCredentials = true;
-
 // Register a new user
 export const register = async (username, email, password, navigate) => {
     return new Promise((resolve, reject) => {
-
         // check if data is valid
         if (!isRegisterValid(username, email, password).status) {
             return reject({ status: false, message: 'Invalid username, email or password.' });
         }
+
+        // Create a new abort controller
+        const controller = new AbortController();
 
         // Send a POST request to the server
         Axios.post('http://localhost:3001/api/post/register', {
             username: username,
             email: email,
             password: password,
+            signal: controller.signal,
             validateStatus: (status) => {
                 // Resolve only if the status code is less than 500
                 // This is because we want to handle 500 (server) errors ourselves
@@ -36,11 +36,19 @@ export const register = async (username, email, password, navigate) => {
             return reject({ status: false, message: response.data.message });
 
         }).catch((error) => {
+            if (error.name === "CanceledError") {
+                return;
+            }
             // If the server is down, show an error message
             // This is because we are not handling 500 (server) errors ourselves
             console.log(error)
             return reject({ status: false, message: 'Something went wrong. Please try again later.' });
         }); // end of Axios.post
+
+        console.log("Axios sent register")
+
+        // cleanup, abort request
+        return () => controller.abort();
 
     }); // end of promise
 }

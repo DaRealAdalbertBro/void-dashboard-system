@@ -1,4 +1,4 @@
-import useFetch from "../useFetch";
+import useFetch from "./useFetch";
 import Axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -25,6 +25,7 @@ import { CustomPopup } from "../CustomPopup";
 
 
 const Profile = () => {
+    // get user info from server
     let { data, error } = useFetch("/api/get/userinfo");
 
     // set variables for updating user info - save buttons
@@ -50,38 +51,49 @@ const Profile = () => {
 
     useEffect(() => {
         document.title = "My Profile | Void";
-        
+
         // get dominant color of profile picture
         const avatarElement = document.getElementById("profile-picture");
         if (!avatarElement) return;
 
+        // define abort controller to abort fetch request if user leaves page
+        const controller = new AbortController();
+
         // set banner color to user's banner color
         avatarElement.onload = () => {
+            // get banner element
             const banner = document.querySelector(".profile-container .profile");
 
-            if (data && data.user
-                && (data.user.user_banner_color == null || data.user.user_banner_color === "[90,113,147]")
+            // if user doesn't have a banner color in database, get average color of avatar and set it as background
+            if (data.user
+                && (!data.user.user_banner_color || data.user.user_banner_color === "[90,113,147]")
                 && data.user.user_avatar_url !== defaultProfilePicture) {
 
                 // get average color of avatar
                 const averageColor = getAverageColor(avatarElement, 1);
 
                 // create gradient from this color and set it as background
-                const gradient = averageColorToGradient(averageColor);
+                const gradient = averageColorToGradient([averageColor.R, averageColor.G, averageColor.B]);
                 banner.style.background = gradient;
 
                 // store this color in database
-                Axios.post("http://localhost:3001/api/post/updateuser", { user_id: data.user.user_id, user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]` })
-                    .then((response) => {
+                Axios.post("http://localhost:3001/api/post/updateuser",
+                    {
+                        user_id: data.user.user_id,
+                        user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]`,
+                    },
+                    {
+                        signal: controller.signal,
+                    }).then((response) => {
                         // if update was successful
                         if (response.data.status) {
                             // update data with new user info
                             data.user = response.data.user;
                         }
-                    })
-                    .catch(error => error);
+                    }).catch(error => error);
                 // end of axios post
 
+                console.log("Axios post request sent to update user banner color.")
             }
             else {
                 // set banner color to user's banner color if it's already in database
@@ -89,8 +101,7 @@ const Profile = () => {
                 const gradient = averageColorToGradient(averageColor);
                 banner.style.backgroundImage = gradient;
             }
-        }
-
+        } // end of avatarElement.onload
     }, [data]);
 
 
@@ -287,7 +298,7 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
 
                         <div className="avatar-preview">
                             <div className="avatar-preview-image">
-                                <img src={avatarFile && URL.createObjectURL(avatarFile) || data.user.user_avatar_url || defaultProfilePicture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} crossOrigin="Anonymous" draggable="false" alt="" />
+                                <img src={(avatarFile && URL.createObjectURL(avatarFile)) || data.user.user_avatar_url || defaultProfilePicture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} crossOrigin="Anonymous" draggable="false" alt="" />
                             </div>
                         </div>
                     </div>

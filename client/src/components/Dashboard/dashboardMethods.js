@@ -1,7 +1,5 @@
 import Axios from 'axios';
 
-Axios.defaults.withCredentials = true;
-
 export const handleClickOutsideProfileDropdown = (e, profileDropdownOpen) => {
     // if profileDropdownOpen is undefined, return and log error
     if (profileDropdownOpen && !e.target.closest('.profile')) {
@@ -62,13 +60,25 @@ export const handleLogout = (navigate) => {
     if (!navigate) {
         return console.log("Could not navigate to '/' because navigate() is undefined.");
     }
+
+    // create abort controller
+    const controller = new AbortController();
     
     // send logout request to server
-    Axios.post('http://localhost:3001/api/post/logout').then((response) => {
+    Axios.post('http://localhost:3001/api/post/logout', {
+        signal: controller.signal,
+    }).then((response) => {
+        // if operation was successful, navigate to login page
         if (response.data.status) {
             return navigate('/');
         }
     }).catch((err) => {
+        if (err.name === "CanceledError") {
+            return;
+        }
+        
         console.log(err);
     });
+
+    return () => controller.abort();
 }

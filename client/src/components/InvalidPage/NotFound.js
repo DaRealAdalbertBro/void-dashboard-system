@@ -19,7 +19,7 @@ const NotFound = () => {
 
     useEffect(() => {
         document.title = 'Page not found | Void';
-    }, [])
+    }, [navigate])
 
     return (
         <div className='not-found-container'>

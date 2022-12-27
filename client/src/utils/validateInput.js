@@ -33,7 +33,7 @@ export const isUsernameValid = (value) => {
 
 export const isTagValid = (value) => {
     // look for special characters
-    const regex = /^[0-9]+$/;
+    const regex = /^\d+$/;
     // test if value contains special characters
     if (!regex.test(value)) {
         // remove the last character if it is a special character
