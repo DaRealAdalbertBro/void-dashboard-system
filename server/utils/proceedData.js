@@ -1,19 +1,18 @@
-const { resolve } = require('path');
-
 // import database config from config file
-const config = require('../config.json').database;
+const CONFIG = require('../config.json');
+
+// import bcrypt for encryption
 const bcrypt = require('bcrypt');
 
+// export functions as module
 module.exports = function (db_connection) {
-    const users_table_name = config.users_table_name;
-    const users_table_columns = config.users_table_columns;
-    const config_user_id = config.users_table_columns.user_id;
-    const config_user_name = config.users_table_columns.user_name;
-    const config_user_tag = config.users_table_columns.user_tag;
-    const config_user_email = config.users_table_columns.user_email;
-    const config_user_password_hash = config.users_table_columns.user_password_hash;
-
-    const CONFIG = require('../config.json');
+    const users_table_name = CONFIG.database.users_table_name;
+    const users_table_columns = CONFIG.database.users_table_columns;
+    const config_user_id = CONFIG.database.users_table_columns.user_id;
+    const config_user_name = CONFIG.database.users_table_columns.user_name;
+    const config_user_tag = CONFIG.database.users_table_columns.user_tag;
+    const config_user_email = CONFIG.database.users_table_columns.user_email;
+    const config_user_password_hash = CONFIG.database.users_table_columns.user_password_hash;
 
     const idOrUsernameExists = (user_id, user_name, user_tag) => {
         return new Promise((resolve, reject) => {

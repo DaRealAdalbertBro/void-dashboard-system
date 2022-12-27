@@ -182,6 +182,11 @@ input[type="password" i] {
   opacity: 1;
 }
 
+.login-container .login-box .login-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 
 .login-container img {
   position: absolute;

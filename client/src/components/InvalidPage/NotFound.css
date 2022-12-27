@@ -1,0 +1,64 @@
+.not-found-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    height: 100vh;
+    width: 100%;
+    gap: 56px;
+    padding: 56px;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+}
+
+.not-found-container img {
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: var(--green) 0px 0px 24px 2px;
+    border-radius: 12px;
+}
+
+.not-found-container .not-found-text {
+    display: flex;
+    justify-content: center;
+    align-items: left;
+    flex-direction: column;
+}
+
+.not-found-container .not-found-text p {
+    max-width: 500px;
+    font-size: 16px;
+    margin-top: 12px;
+    color: var(--lighter-text);
+}
+
+.not-found-container .not-found-text button {
+    width: auto;
+    max-width: 192px;
+    background-color: var(--purple-hover);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px 12px;
+    border-radius: 8px;
+    color: var(--default-text);
+    outline: none;
+    border: none;
+    font-weight: 600;
+    margin: 24px 0;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.not-found-container .not-found-text button:hover {
+    background-color: var(--purple);
+}
+
+.not-found-container .not-found-text .error-code {
+    color: var(--red);
+}
+
+.not-found-container .not-found-text .not-here {
+    color: var(--red);
+}

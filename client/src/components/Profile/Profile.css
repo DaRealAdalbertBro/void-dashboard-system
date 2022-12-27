@@ -193,10 +193,10 @@
 }
 
 .profile-container .profile-bottom .box-wrapper .box#save,
-.profile-container .profile-bottom .box-wrapper .box#save-password {
+.profile-container .profile-bottom .box-wrapper .box#password {
     width: 100%;
-    min-width: 92px;
-    min-height: 42px;
+    min-width: 456px;
+    min-height: 92px;
     align-items: center;
     justify-content: center;
 }
