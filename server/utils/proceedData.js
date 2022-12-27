@@ -99,9 +99,11 @@ module.exports = function (db_connection) {
                 [user_id],
                 (error, result) => {
                     if (error) {
+                        console.log(error)
                         reject(error);
                     }
                     else {
+                        console.log(result)
                         resolve(result);
                     }
                 }

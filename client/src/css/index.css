@@ -146,7 +146,6 @@ input:-webkit-autofill:active {
 .login-container .login-box .login-error {
   color: #E76107;
   font-size: 0.8rem;
-  margin-bottom: 10px;
   display: flex;
   width: 90%;
   justify-content: flex-start;
@@ -351,6 +350,104 @@ input[type="password" i] {
 }
 
 
+
+/* DEFAULTS */
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.full {
+  width: 100%;
+  height: 100%;
+}
+
+.auto {
+  height: auto;
+}
+
+/* FLEX DIRECTIONS */
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+/* FLEX POSITIONS */
+
+.top-right {
+  justify-content: flex-end;
+}
+
+.top-left {
+  align-items: flex-start;
+}
+
+.bottom-right {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.bottom-left {
+  align-items: flex-end;
+}
+
+.center {
+  justify-content: center;
+  align-items: center;
+}
+
+.top-center {
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.bottom-center {
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.left-center {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.right-center {
+  justify-content: flex-end;
+  align-items: center;
+}
+
+
+/* BOX */
+
+.box-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 56px;
+}
+
+.sub-component {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: var(--default-background);
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+}
+
+
+
 @keyframes spin {
   from {
     transform: rotate(0turn);
@@ -387,13 +484,13 @@ input[type="password" i] {
   }
 
   to {
-    opacity: 1;
+    opacity: auto;
   }
 }
 
 @keyframes fadeOut {
   from {
-    opacity: 1;
+    opacity: auto;
   }
 
   to {

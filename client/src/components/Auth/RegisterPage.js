@@ -27,6 +27,11 @@ const RegisterPage = () => {
 
     }, []);
 
+    // set the document title
+    useEffect(() => {
+        document.title = "Register | Void";
+    }, [navigate]);
+
     useEffect(() => {
         // Check if the inputs are valid
         if (isRegisterValid(username, email, password).status) {

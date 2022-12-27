@@ -1,6 +1,6 @@
-import useFetch from "../useFetch";
 import Axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 // import react icons
 import { FcPlus, FcServices } from "react-icons/fc";
@@ -23,9 +23,14 @@ import { addPaddingToStringNumber, getAverageColor, averageColorToGradient, perm
 import { LoadingCircle } from "../LoadingCircle";
 import { CustomPopup } from "../CustomPopup";
 
+Axios.defaults.withCredentials = true;
 
 const Profile = () => {
-    let { data, error } = useFetch("/api/get/userinfo");
+    // get user_id parameter from url
+    const { userID } = useParams();
+    const navigate = useNavigate();
+
+    const [data, setData] = useState(null);
 
     // set variables for updating user info - save buttons
     const [canSaveSettings, setCanSaveSettings] = useState(false);
@@ -48,40 +53,79 @@ const Profile = () => {
         message: [popupMessage, setPopupMessage],
     };
 
+    // get user data from server
     useEffect(() => {
-        document.title = "My Profile | Void";
-        
+        // define abort controller to abort fetch request if user leaves page
+        const controller = new AbortController();
+
+        // get user data from server
+        Axios.post("http://localhost:3001/api/post/userById", {
+            user_id: userID,
+            signal: controller.signal,
+        }).then((response) => {
+            console.log(response.data)
+            if (response.data.status) {
+                return setData(response.data);
+            }
+
+            // if user doesn't exist, redirect to 404 page 
+            return navigate("/404");
+        }).catch((error) => {
+            if (error.name === "CanceledError") return;
+
+            // if user doesn't exist or some other error occurred, redirect to 404 page
+            return navigate("/404");
+        });
+
+        // abort fetch request if user leaves page
+        return () => {
+            controller.abort();
+        };
+    }, [navigate, userID]);
+
+    useEffect(() => {
+        document.title = "Profile | Void";
+
         // get dominant color of profile picture
         const avatarElement = document.getElementById("profile-picture");
         if (!avatarElement) return;
 
+        // define abort controller to abort fetch request if user leaves page
+        const controller = new AbortController();
+
         // set banner color to user's banner color
         avatarElement.onload = () => {
+            // get banner element
             const banner = document.querySelector(".profile-container .profile");
 
-            if (data && data.user
-                && (data.user.user_banner_color == null || data.user.user_banner_color === "[90,113,147]")
+            // if user doesn't have a banner color in database, get average color of avatar and set it as background
+            if (data.user
+                && (!data.user.user_banner_color || data.user.user_banner_color === "[90,113,147]")
                 && data.user.user_avatar_url !== defaultProfilePicture) {
 
                 // get average color of avatar
                 const averageColor = getAverageColor(avatarElement, 1);
 
                 // create gradient from this color and set it as background
-                const gradient = averageColorToGradient(averageColor);
+                const gradient = averageColorToGradient([averageColor.R, averageColor.G, averageColor.B]);
                 banner.style.background = gradient;
 
                 // store this color in database
-                Axios.post("http://localhost:3001/api/post/updateuser", { user_id: data.user.user_id, user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]` })
-                    .then((response) => {
+                Axios.post("http://localhost:3001/api/post/updateuser",
+                    {
+                        user_id: data.user.user_id,
+                        user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]`,
+                        signal: controller.signal,
+                    }).then((response) => {
                         // if update was successful
                         if (response.data.status) {
                             // update data with new user info
-                            data.user = response.data.user;
+                            setData(response.data);
                         }
-                    })
-                    .catch(error => error);
+                    }).catch(error => error);
                 // end of axios post
 
+                console.log("Axios post request sent to update user banner color.")
             }
             else {
                 // set banner color to user's banner color if it's already in database
@@ -89,15 +133,12 @@ const Profile = () => {
                 const gradient = averageColorToGradient(averageColor);
                 banner.style.backgroundImage = gradient;
             }
-        }
-
+        } // end of avatarElement.onload
     }, [data]);
 
 
     return (
         <div className="profile-container">
-            {error && <div>{error}</div>}
-
             {popupActive && <CustomPopup title={popupTitle} message={popupMessage} setActive={setPopupActive} />}
 
             {
@@ -109,21 +150,29 @@ const Profile = () => {
 
                             <div className="profile-bottom">
 
-                                <div className="box-wrapper">
-                                    <div className="settings-wrapper">
+                                {data.canEditProfile ? (
+                                        <div className="box-wrapper">
+                                            <div className="settings-wrapper">
 
-                                        <UserSettings data={data} popupContext={popupContext} canSaveSettings={canSaveSettings} setCanSaveSettings={setCanSaveSettings} />
+                                                <UserSettings data={data} popupContext={popupContext} canSaveSettings={canSaveSettings} setCanSaveSettings={setCanSaveSettings} />
 
-                                        <AvatarSettings data={data} popupContext={popupContext} canSaveAvatar={canSaveAvatar} setCanSaveAvatar={setCanSaveAvatar} avatarFile={avatarFile} setAvatarFile={setAvatarFile} />
+                                                <AvatarSettings data={data} popupContext={popupContext} canSaveAvatar={canSaveAvatar} setCanSaveAvatar={setCanSaveAvatar} avatarFile={avatarFile} setAvatarFile={setAvatarFile} />
 
+                                            </div>
+
+                                            <div className="settings-wrapper">
+                                                <PasswordSettings data={data} popupContext={popupContext} canSavePassword={canSavePassword} setCanSavePassword={setCanSavePassword} />
+                                            </div>
+
+                                        </div>
+                                    ) : <div className="box-wrapper">
+                                        <div className="box">
+                                            <div className="box-header">
+                                                <h3 className="box-title">You don't have enough permissions to edit this user :C</h3>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <div className="settings-wrapper">
-                                        <PasswordSettings data={data} popupContext={popupContext} canSavePassword={canSavePassword} setCanSavePassword={setCanSavePassword} />
-                                    </div>
-
-
-                                </div>
+                                }
                             </div >
 
                         </div >
@@ -287,7 +336,7 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
 
                         <div className="avatar-preview">
                             <div className="avatar-preview-image">
-                                <img src={avatarFile && URL.createObjectURL(avatarFile) || data.user.user_avatar_url || defaultProfilePicture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} crossOrigin="Anonymous" draggable="false" alt="" />
+                                <img src={(avatarFile && URL.createObjectURL(avatarFile)) || data.user.user_avatar_url || defaultProfilePicture} onError={e => { e.currentTarget.src = defaultProfilePicture; e.currentTarget.onerror = null }} crossOrigin="Anonymous" draggable="false" alt="" />
                             </div>
                         </div>
                     </div>

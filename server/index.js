@@ -100,7 +100,7 @@ const storage = multer.diskStorage({
 // set up upload
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 8000000 },
+    limits: { fileSize: CONFIG.defaults.DEFAULT_MAX_FILE_SIZE[1] },
     fileFilter: (req, file, cb) => {
         if (file.mimetype.includes('image') || file.mimetype.includes('gif')) {
             cb(null, true);
@@ -116,6 +116,8 @@ require("./api/post/register")(app, db_connection);
 require("./api/post/login")(app, db_connection);
 require("./api/post/logout")(app);
 require("./api/post/updateuser")(app, db_connection, upload);
+require("./api/post/userById")(app, db_connection);
+require("./api/post/fetchUserList")(app, db_connection);
 
 // GET
 require("./api/get/userinfo")(app);
@@ -150,6 +152,8 @@ app.use((req, res, next) => {
 
 app.use(function (err, req, res, next) {
     if (!err.statusCode) err.statusCode = 500;
+
+    console.log(err.message);
 
     if (err) {
         return res.status(err.statusCode).send({ ok: false });

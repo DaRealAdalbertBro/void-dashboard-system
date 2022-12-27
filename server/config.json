@@ -33,7 +33,8 @@
         "LOGOUT_SUCCESSFUL": "Logout successful.",
         "INVALID_PERMISSIONS": "You do not have the required permissions to perform this action.",
         "INVALID_OLD_PASSWORD": "The old password you provided is incorrect.",
-        "PASSWORDS_DONT_MATCH": "The new passwords you provided do not match."
+        "PASSWORDS_DONT_MATCH": "The new passwords you provided do not match.",
+        "ERROR_FETCHING_DATA": "Something went wrong with fetching the data... Please try again later!"
     },
     "encryption": {
         "SALT_ROUNDS": 10

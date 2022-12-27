@@ -19,7 +19,7 @@ const NotFound = () => {
 
     useEffect(() => {
         document.title = 'Page not found | Void';
-    }, [])
+    }, [navigate])
 
     return (
         <div className='not-found-container'>
@@ -32,7 +32,7 @@ const NotFound = () => {
 
                 {randomGif.message}
 
-                <button onClick={() => navigate('/')}>Go to Home Page</button>
+                <button onClick={() => navigate('/dashboard/')}>Go to Home Page</button>
             </div>
         </div>
     );

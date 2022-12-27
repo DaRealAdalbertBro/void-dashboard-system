@@ -1,54 +1,72 @@
+
+import Axios from "axios";
+
 export const RGBtoHSV = (r, g, b) => {
-    // declare variables for red, green, blue, hue, saturation, value, and max color value
-    let rabs, gabs, babs, rr, gg, bb, h, s, v, diff, diffc, percentRoundFn;
+    // declare variables for red, green, blue, hue, saturation, value, and difference
+    let redAbsolute,
+        greenAbsolute,
+        blueAbsolute,
+        red,
+        green,
+        blue,
+        hue,
+        saturation,
+        value,
+        difference;
 
     // Make r, g, and b fractions of 1
-    rabs = r / 255;
-    gabs = g / 255;
-    babs = b / 255;
+    redAbsolute = r / 255;
+    greenAbsolute = g / 255;
+    blueAbsolute = b / 255;
 
     // Find greatest and smallest channel values
-    v = Math.max(rabs, gabs, babs)
-    diff = v - Math.min(rabs, gabs, babs);
-    diffc = c => (v - c) / 6 / diff + 1 / 2;
+    value = Math.max(redAbsolute, greenAbsolute, blueAbsolute)
+    difference = value - Math.min(redAbsolute, greenAbsolute, blueAbsolute);
 
-    // Round to nearest 100th
-    percentRoundFn = num => Math.round(num * 100) / 100;
+    // Find difference between color channels
+    const differenceColor = (color) => {
+        return (value - color) / 6 / difference + 1 / 2;
+    };
+
+    // Round to nearest 100th (percentage)
+    const percentageRound = (number) => {
+        return Math.round(number * 100) / 100;
+    };
 
     // Make grey if there is no color difference
-    if (diff == 0) {
-        h = s = 0;
+    if (difference === 0) {
+        hue = saturation = 0;
     } else {
         // Find saturation and hue
-        s = diff / v;
+        saturation = difference / value;
 
         // Find the red/green/blue difference
-        rr = diffc(rabs);
-        gg = diffc(gabs);
-        bb = diffc(babs);
+        red = differenceColor(redAbsolute);
+        green = differenceColor(greenAbsolute);
+        blue = differenceColor(blueAbsolute);
 
         // Find the greatest channel and assign hue based on which channel it is
-        if (rabs === v) {
-            h = bb - gg;
-        } else if (gabs === v) {
-            h = (1 / 3) + rr - bb;
-        } else if (babs === v) {
-            h = (2 / 3) + gg - rr;
+        if (redAbsolute === value) {
+            hue = blue - green;
+        } else if (greenAbsolute === value) {
+            hue = (1 / 3) + red - blue;
+        } else if (blueAbsolute === value) {
+            hue = (2 / 3) + green - red;
         }
 
         // Make negative hues positive behind 360°
-        if (h < 0) {
-            h += 1;
-        } else if (h > 1) {
-            h -= 1;
+        if (hue < 0) {
+            hue += 1;
+        } else if (hue > 1) {
+            hue -= 1;
         }
     }
 
     // return the hue, saturation, and value
     return {
-        H: Math.round(h * 360),
-        S: percentRoundFn(s * 100),
-        V: percentRoundFn(v * 100)
+        H: Math.round(hue * 360),
+        S: percentageRound(saturation * 100),
+        V: percentageRound(value * 100)
     };
 }
 
@@ -175,7 +193,7 @@ export const addPaddingToStringNumber = (number, padding) => {
     // convert number to string if it is not a string
     let stringNumber = typeof number === "string" ? number : number.toString()
 
-    if (stringNumber.length == 0) {
+    if (stringNumber.length === 0) {
         return stringNumber;
     }
 
@@ -192,7 +210,7 @@ export const addPaddingToStringNumber = (number, padding) => {
 
     // check if string is all zeros
     // if yes, replace last zero with 1
-    if (stringNumber == "0".repeat(padding)) {
+    if (stringNumber === "0".repeat(padding)) {
         stringNumber = stringNumber.slice(0, -1) + "1"
     }
 
@@ -215,10 +233,6 @@ export const arrayStringToArray = (string) => {
 export const makeColorLighter = (color) => {
     // convert color to RGB
     let colorHSV = RGBtoHSV(color[0], color[1], color[2]);
-
-    // make color lighter
-    colorHSV.S = (colorHSV.S < 50) ? colorHSV.S + 20 : (colorHSV.S < 60) ? colorHSV.S + 10 : colorHSV.S;
-    colorHSV.V = (colorHSV.V < 60) ? colorHSV.V + 20 : (colorHSV.V < 70) ? colorHSV.V + 10 : colorHSV.V;
 
     // edit saturation
     if (colorHSV.S < 50) {
@@ -250,7 +264,6 @@ export const makeColorLighter = (color) => {
 export const makeColorDarker = (color) => {
     // convert color to RGB
     let colorHSV = RGBtoHSV(color[0], color[1], color[2]);
-
 
     // edit hue
     if (colorHSV.H > 20) {
@@ -333,3 +346,70 @@ export const stringToPermissionLevel = (permissionLevelString) => {
             return 0;
     };
 };
+
+export const isUserLoggedIn = (navigate) => {
+    const controller = new AbortController();
+
+    // check if user is logged in
+    Axios.get("http://localhost:3001/api/get/userinfo", {
+        signal: controller.signal
+    }).then((response) => {
+        // check if user is logged in
+        if (response.data.status && response.data.user) {
+            return navigate()
+        }
+    }).catch((err) => {
+        // check if error is abort error
+        if (err.name === "CanceledError") {
+            return;
+        }
+
+        console.log(err);
+    });
+
+    console.log("Axios sent is user logged in request.")
+
+    // cleanup, abort request
+    return () => controller.abort();
+};
+
+export const getUserData = (controller) => {
+    return new Promise((resolve, reject) => {
+        // check if user is logged in
+        // Send request to get user data
+        Axios.get("http://localhost:3001/api/get/userinfo", {
+            signal: controller.signal
+        }).then((response) => {
+            // return user data
+            return resolve({ status: response.data.status, data: response.data });
+        }).catch((err) => {
+            // check if error is abort error
+            if (err.name === "CanceledError") {
+                return;
+            }
+            console.log(err);
+
+            return resolve({ status: false, data: null });
+        });
+
+        console.log("Axios sent get user data request.")
+    });
+}
+
+export const Paginator = (items, page, per_page) => {
+    page = page || 1;
+    per_page = per_page || 10;
+    let offset = (page - 1) * per_page;
+    let paginatedItems = items.slice(offset).slice(0, per_page);
+    let total_pages = Math.ceil(items.length / per_page);
+    
+    return {
+        page: page,
+        per_page: per_page,
+        pre_page: page - 1 ? page - 1 : null,
+        next_page: (total_pages > page) ? page + 1 : null,
+        total: items.length,
+        total_pages: total_pages,
+        data: paginatedItems
+    };
+}
