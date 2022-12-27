@@ -13,15 +13,15 @@ module.exports = function (app) {
             }
 
             // send user object
-            response.send({
+            return response.send({
                 status: 1,
                 user: userObject
             });
         }
-        else {
-            // if user is not logged in, send status 0 - not logged in
-            response.send({ status: 0, message: CONFIG.messages.NOT_LOGGED_IN });
-        }
+        
+        // if user is not logged in, send status 0 - not logged in
+        return response.send({ status: 0, message: CONFIG.messages.NOT_LOGGED_IN });
+
     });
 
 }

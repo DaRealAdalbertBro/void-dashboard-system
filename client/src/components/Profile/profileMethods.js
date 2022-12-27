@@ -60,7 +60,7 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
     // if update was successful
     if (response.data && response.data.status) {
         // reload page
-        return window.location.replace("/dashboard/profile");
+        return window.location.reload();
     }
 
     // show error popup

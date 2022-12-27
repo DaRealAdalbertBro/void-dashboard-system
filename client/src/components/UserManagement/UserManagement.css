@@ -1,0 +1,204 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 42px;
+    min-height: 90vh;
+}
+
+.list-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.list-wrapper .left-arrow svg,
+.list-wrapper .right-arrow svg {
+    color: var(--lighter-text);
+    font-size: 28px;
+    opacity: 0.8;
+    transition: 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+.list-wrapper .left-arrow svg:hover,
+.list-wrapper .right-arrow svg:hover {
+    opacity: 1;
+}
+
+.list-wrapper .left-arrow.disabled svg,
+.list-wrapper .right-arrow.disabled svg {
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+
+#user-management {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 48px;
+}
+
+#user-management .wrapper {
+    display: flex;
+    gap: 32px 24px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+    flex: 0 0 1;
+}
+
+#user-management .box {
+    width: 100%;
+    height: 172px;
+    border-radius: 12px;
+    padding: 24px;
+    background-color: var(--gray);
+    box-shadow: 0 0 24px 0px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
+    opacity: 0.6;
+    flex: 0 0 424px;
+}
+
+#user-management .box .gradient {
+    position: absolute;
+    width: 424px;
+    height: 172px;
+    border-radius: 12px;
+    z-index: 1;
+    opacity: 0;
+    transition: 0.3s ease-in-out;
+    background-image: linear-gradient(rgba(56, 74, 134, 0.1), rgba(56, 74, 134, 0.3), rgba(82, 128, 198, 0.8));
+}
+
+#user-management .box:hover .gradient {
+    opacity: 1;
+}
+
+#user-management .box:hover {
+    opacity: 1;
+}
+
+
+#user-management .box .avatar {
+    z-index: 10;
+    width: 92px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+#user-management .box .avatar img {
+    width: 100%;
+    height: auto;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+}
+
+#user-management .heading {
+    z-index: 10;
+    color: var(--default-text);
+    margin-left: 24px;
+}
+
+#user-management .heading .user-name {
+    font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 192px;
+}
+
+#user-management .heading .user-name .user-tag {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--lighter-text);
+    opacity: 0.6;
+    margin-left: 4px;
+}
+
+#user-management .heading .email {
+    font-size: 14px;
+    opacity: 0.8;
+    font-weight: 400;
+    color: var(--lighter-text);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 192px;
+}
+
+#user-management .heading .id {
+    color: var(--green-hover);
+    font-size: 16px;
+}
+
+#user-management .heading .id .darker {
+    color: var(--green);
+    margin-right: 4px;
+    user-select: none;
+}
+
+#user-management .heading .role {
+    color: var(--blue);
+    font-size: 16px;
+}
+
+#user-management .heading .role .darker {
+    color: var(--darker-blue);
+    margin-right: 4px;
+    user-select: none;
+}
+
+.search-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    width: 40%;
+    min-width: 242px;
+}
+
+.search-bar input {
+    display: flex;
+    width: 100%;
+    outline: none;
+    border: solid var(--purple) 1px;
+    border-radius: 4px;
+    padding: 12px 12px;
+    text-align: center;
+    color: var(--lighter-text);
+    background-color: var(--default-background);
+}
+
+.search-bar input::placeholder {
+    word-spacing: 4px;
+}
+
+.search-bar input:focus::placeholder {
+    color: transparent;
+}
+
+.search-bar input:focus {
+    border: solid var(--purple-hover) 1px;
+}

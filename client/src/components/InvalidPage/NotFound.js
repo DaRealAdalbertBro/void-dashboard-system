@@ -32,7 +32,7 @@ const NotFound = () => {
 
                 {randomGif.message}
 
-                <button onClick={() => navigate('/')}>Go to Home Page</button>
+                <button onClick={() => navigate('/dashboard/')}>Go to Home Page</button>
             </div>
         </div>
     );

@@ -53,9 +53,9 @@ const Dashboard = ({ componentToShow }) => {
     // handle left sidebar click
     useEffect(() => {
         // get navigation item that was clicked
-        const componentRef = componentToShow ? document.getElementById((componentToShow.type.name).toString().toLowerCase()) : document.getElementById("home");
+        const componentRef = componentToShow ? document.getElementById((componentToShow.type.name).toString()) : document.getElementById("home");
 
-        // remove active class from all navigation items
+        // add active class to navigation item
         if (componentRef) {
             componentRef.classList.add('active');
         }
@@ -171,7 +171,7 @@ const LeftSideBar = ({ permissionLevel }) => {
 
             {
                 permissionLevel >= 2 &&
-                <div className='dashboard-left-bar-item' id="users" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
+                <div className='dashboard-left-bar-item' id="UserManagement" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
                     <BiGroup />
                     <p>Users</p>
                 </div>

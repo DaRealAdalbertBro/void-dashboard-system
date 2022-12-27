@@ -50,7 +50,7 @@ export const handleNavigationClick = (destination, navigate) => {
     else if (destination === "calendar") {
         return navigate('/dashboard/calendar');
     }
-    else if (destination === "users") {
+    else if (destination === "UserManagement") {
         return navigate('/dashboard/users');
     }
 }

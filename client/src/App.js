@@ -6,6 +6,7 @@ import Profile from './components/Profile/Profile';
 import LoginPage from './components/Auth/LoginPage';
 import RegisterPage from './components/Auth/RegisterPage';
 import NotFound from './components/InvalidPage/NotFound';
+import UserManagement from './components/UserManagement/UserManagement';
 
 // set Axios defaults
 import Axios from 'axios';
@@ -27,6 +28,14 @@ function App() {
 
           <Route exact path='/dashboard/profile' element={
             <Dashboard componentToShow={<Profile />} />
+          } />
+
+          <Route exact path='/dashboard/profile/:userID' element={
+            <Dashboard componentToShow={<Profile />} />
+          } />
+
+          <Route exact path='/dashboard/users' element={
+            <Dashboard componentToShow={<UserManagement />} />
           } />
 
           <Route path="*" element={<NotFound />} />

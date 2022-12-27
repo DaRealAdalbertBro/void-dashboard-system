@@ -17,10 +17,21 @@ module.exports = function (app, db_connection, upload) {
         let user_permissions = request.body.user_permissions;
         const user_banner_color = request.body.user_banner_color;
 
+
+        // check if user exists in request body
+        if (!user_id) {
+            return response.send({ status: 0, message: CONFIG.messages.USER_NOT_FOUND });
+        }
+
         try {
             user_id = parseInt(user_id);
         } catch (error) {
             return response.send({ status: 0, message: CONFIG.messages.USER_NOT_FOUND });
+        }
+
+        // check if user has permissions to update the data
+        if (request.session.user.user_permissions < CONFIG.permissions.administrator && user_id !== request.session.user.user_id) {
+            return response.send({ status: 0, message: CONFIG.messages.INVALID_PERMISSIONS })
         }
 
         if (request.file) {
@@ -33,10 +44,6 @@ module.exports = function (app, db_connection, upload) {
 
         let updateObject = {};
 
-        // check if user exists in request body
-        if (!user_id) {
-            return response.send({ status: 0, message: CONFIG.messages.USER_NOT_FOUND });
-        }
 
         // check if fields are valid
         if (!user_name && !user_tag && !user_email && (!user_old_password && !user_new_password && !user_repeat_new_password) && !user_avatar_url && !user_permissions && !user_banner_color) {
@@ -130,7 +137,7 @@ module.exports = function (app, db_connection, upload) {
             if (user_permissions && user_permissions !== result[0][CONFIG.database.users_table_columns.user_permissions]) {
                 try {
                     user_permissions = parseInt(user_permissions);
-                } 
+                }
                 catch (error) {
                     console.log(error);
                 }
@@ -157,11 +164,13 @@ module.exports = function (app, db_connection, upload) {
                     user_created_at: snowflakeIdCreatedAt(user_id || result[0][CONFIG.database.users_table_columns.user_id]),
                 }
 
-                // store new user data in session
-                await utils.storeDataInSession(request,
-                    userObject['user_id'], userObject['user_name'], userObject['user_tag'],
-                    userObject['user_email'], userObject['user_permissions'],
-                    userObject['user_avatar_url'], userObject['user_banner_color']);
+                // store new user data in session if user is updating their own data
+                if (user_id === request.session.user.user_id) {
+                    await utils.storeDataInSession(request,
+                        userObject['user_id'], userObject['user_name'], userObject['user_tag'],
+                        userObject['user_email'], userObject['user_permissions'],
+                        userObject['user_avatar_url'], userObject['user_banner_color']);
+                }
 
                 // return success message
                 return response.send({ status: 1, message: CONFIG.messages.USER_UPDATED, user: userObject });
