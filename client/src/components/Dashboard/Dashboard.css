@@ -218,6 +218,14 @@
     padding-bottom: 2px;
 }
 
+.dashboard-container .dashboard-left-bar .dashboard-left-bar-item a {
+  font-size: 16px;
+  font-weight: 600;
+  padding-bottom: 2px;
+  text-decoration: none;
+  color: var(--lighter-text);
+}
+
 .dashboard-container .dashboard-left-bar .dashboard-left-bar-item svg {
     font-size: 24px;
     margin-right: 8px;

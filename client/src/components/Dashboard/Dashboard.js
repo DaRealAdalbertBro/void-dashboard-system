@@ -152,14 +152,13 @@ const LeftSideBar = ({ permissionLevel }) => {
             {/* BAR ITEMS / SECTIONS */}
             <div className='dashboard-left-bar-item' id="home" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
                 <FaHome />
-                <p>Home</p>
+                <a href="/dashboard">Home</a>
             </div>
 
             <div className='dashboard-left-bar-item' id="calendar" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
                 <FaHome />
-                <p>Calendar</p>
+                <a href="/dashboard/calendar">Calendar</a>
             </div>
-
 
             {
                 permissionLevel >= 2 &&
@@ -173,7 +172,7 @@ const LeftSideBar = ({ permissionLevel }) => {
                 permissionLevel >= 2 &&
                 <div className='dashboard-left-bar-item' id="UserManagement" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
                     <BiGroup />
-                    <p>Users</p>
+                    <a href="/dashboard/users">Users</a>
                 </div>
             }
 
