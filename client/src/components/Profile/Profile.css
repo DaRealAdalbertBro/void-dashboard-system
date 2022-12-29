@@ -403,16 +403,17 @@
     cursor: pointer;
     border-radius: 12px;
     gap: 16px;
-}
-
-.box .user-info .avatar-wrapper .avatar-preview img {
+  }
+  
+  .box .user-info .avatar-wrapper .avatar-preview img {
     width: 124px;
     height: 124px;
     border-radius: 50%;
-}
+    object-fit: cover;
+  }
 
 .box .user-info .avatar-wrapper .avatar-preview .avatar-preview-image {
-    cursor: default;
+  cursor: default;
 }
 
 .box .user-info .avatar-wrapper .avatar-upload .avatar-upload-button p {
