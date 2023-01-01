@@ -1,0 +1,65 @@
+{
+    "database": {
+        "users_table_name": "users",
+        "users_table_columns": {
+            "user_id": "user_id",
+            "user_name": "user_name",
+            "user_tag": "user_tag",
+            "user_password_hash": "user_password_hash",
+            "user_email": "user_email",
+            "user_permissions": "user_permissions",
+            "user_avatar_url": "user_avatar_url",
+            "user_banner_color": "user_banner_color"
+        }
+    },
+    "permissions": {
+        "administrator": 2,
+        "editor": 1,
+        "user": 0
+    },
+    "messages": {
+        "USER_NOT_FOUND": "Could not find user with that name or id.",
+        "USER_ALREADY_EXISTS": "This name and tag is already taken.",
+        "EMAIL_ALREADY_IN_USE": "This email is already in use.",
+        "USER_CREATED": "User has been created successfully.",
+        "USER_UPDATED": "User has been updated successfully.",
+        "NOTHING_TO_UPDATE": "Nothing to update, please provide at least one field of valid data.",
+        "USER_DELETED": "User has been deleted successfully.",
+        "REGISTRATION_SUCCESSFUL": "Registration successful.",
+        "SOMETHING_WENT_WRONG": "Something went wrong. Please try again later.",
+        "INVALID_CREDENTIALS": "Invalid username, email or password.",
+        "LOGIN_SUCCESSFUL": "Login successful.",
+        "NOT_LOGGED_IN": "You are not logged in.",
+        "LOGOUT_SUCCESSFUL": "Logout successful.",
+        "INVALID_PERMISSIONS": "You do not have the required permissions to perform this action.",
+        "INVALID_OLD_PASSWORD": "The old password you provided is incorrect.",
+        "PASSWORDS_DONT_MATCH": "The new passwords you provided do not match.",
+        "ERROR_FETCHING_DATA": "Something went wrong with fetching the data... Please try again later!"
+    },
+    "encryption": {
+        "SALT_ROUNDS": 10
+    },
+    "defaults": {
+        "DEFAULT_AVATAR_URL": "/assets/images/default/avatar.webp",
+        "DEFAULT_BANNER_COLOR": "[19,113,147]",
+        "DEFAULT_PERMISSIONS": 0,
+        "DEFAULT_MAX_FILE_SIZE": [
+            "8mb",
+            8388608
+        ],
+        "DEFAULT_PARAMETER_LIMIT": 1000,
+        "DEFAULT_CORS_ORIGIN": [
+            "http://localhost:3000"
+        ]
+    },
+    "session": {
+        "session_key": "SESSION_ID",
+        "proxy": false,
+        "rolling": true,
+        "cookies": {
+            "secure": false,
+            "expires": 345600000,
+            "sameSite": "lax"
+        }
+    }
+}
