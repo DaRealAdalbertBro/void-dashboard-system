@@ -8,15 +8,16 @@ import { HiOutlineHashtag } from "react-icons/hi";
 import { MdOutlineAlternateEmail, MdOutlineLock } from "react-icons/md";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BsShieldLock } from "react-icons/bs";
+import { BiKey } from "react-icons/bi";
 
 // import default profile picture
-import { defaultProfilePicture } from '../globalVariables';
+import { defaultProfilePicture, maxPermissionLevel } from '../globalVariables';
 
 // import css
 import "./Profile.css";
 
 // import utils
-import { isUsernameValid, isTagValid, isPasswordValid, isFileValid, isInputValidShowErrors } from "../../utils/validateInput";
+import { isUsernameValid, isTagValid, isPasswordValid, isFileValid, isInputValidShowErrors, isPermissionLevelValid } from "../../utils/validateInput";
 import { isUpdateValid, isPasswordUpdateValid, submitSettings, deleteAccount } from "./profileMethods";
 import { addPaddingToStringNumber, getAverageColor, averageColorToGradient, permissionLevelToString } from "../../utils/utils";
 
@@ -35,6 +36,7 @@ const Profile = () => {
     const [canSaveSettings, setCanSaveSettings] = useState(false);
     const [canSavePassword, setCanSavePassword] = useState(false);
     const [canSaveAvatar, setCanSaveAvatar] = useState(false);
+    const [canBeDeleted, setCanBeDeleted] = useState(false);
 
     // store avatar file for later use
     const [avatarFile, setAvatarFile] = useState(null);
@@ -59,15 +61,15 @@ const Profile = () => {
 
         // get user data from server
         Axios.post("http://localhost:3001/api/post/userById", {
-            user_id: userID,
-            signal: controller.signal,
+            user_id: userID
+        }, {
+            signal: controller.signal
         }).then((response) => {
-            console.log(response.data)
             if (response.data.status) {
                 return setData(response.data);
             }
 
-            // if user doesn't exist, redirect to 404 page 
+            // if user doesn't exist, redirect to 404 page
             return navigate("/404");
         }).catch((error) => {
             if (error.name === "CanceledError") return;
@@ -115,14 +117,15 @@ const Profile = () => {
                     {
                         user_id: data.user.user_id,
                         user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]`,
-                        signal: controller.signal,
-                    }).then((response) => {
-                        // if update was successful
-                        if (response.data.status) {
-                            // update data with new user info
-                            setData(response.data);
-                        }
-                    }).catch(error => error);
+                    }, {
+                        signal: controller.signal
+                }).then((response) => {
+                    // if update was successful
+                    if (response.data.status) {
+                        // update data with new user info
+                        setData(response.data);
+                    }
+                }).catch(error => error);
                 // end of axios post
 
                 console.log("Axios post request sent to update user banner color.")
@@ -161,7 +164,7 @@ const Profile = () => {
                                         <div className="settings-wrapper">
                                             <AvatarSettings data={data} popupContext={popupContext} canSaveAvatar={canSaveAvatar} setCanSaveAvatar={setCanSaveAvatar} avatarFile={avatarFile} setAvatarFile={setAvatarFile} />
 
-                                            <DeleteAccountSettings data={data} popupContext={popupContext} />
+                                            <DeleteAccountSettings data={data} popupContext={popupContext} canBeDeleted={canBeDeleted} setCanBeDeleted={setCanBeDeleted} />
                                         </div>
 
 
@@ -284,7 +287,27 @@ const UserSettings = ({ data, popupContext, canSaveSettings, setCanSaveSettings,
 
                     </div>
 
-                    <button className="settings-submit-button green" disabled={!canSaveSettings} onClick={() => {
+                    {data.isAdmin ? (
+                        <div className="flex flex-column full">
+                            <h3>Permission Level</h3>
+
+                            <div className="data-wrapper">
+                                <BiKey className="permissions" />
+
+                                <div className="vertical-divider"></div>
+
+                                <input autoComplete="new-password" style={{ width: "100%" }} type="text" onChange={(e) => {
+                                    e.currentTarget.value = isPermissionLevelValid(e.currentTarget.value).value;
+
+                                    setCanSaveSettings(isUpdateValid(data.user).status);
+
+                                }} placeholder={`${data.user.user_permissions} (${permissionLevelToString(data.user.user_permissions)})`} className="user-permissions-settings" max={maxPermissionLevel} min={0} maxLength={maxPermissionLevel.toString().length} />
+
+                            </div>
+                        </div>
+                    ) : null}
+
+                    <button className="settings-submit-button" disabled={!canSaveSettings} onClick={() => {
                         submitSettings(data.user, {
                             type: "userinfo",
                             canSave: [canSaveSettings, setCanSaveSettings],
@@ -458,7 +481,7 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
     );
 };
 
-const DeleteAccountSettings = ({ data, popupContext }) => {
+const DeleteAccountSettings = ({ data, popupContext, canBeDeleted, setCanBeDeleted }) => {
     const navigate = useNavigate();
 
     return (
@@ -466,23 +489,26 @@ const DeleteAccountSettings = ({ data, popupContext }) => {
             <div className="box-header">
                 <h2 className="red">Delete Account</h2>
 
-                <p className="account-delete-warning">This action is irreversible. If you continue, all your data will be deleted.</p>
+                {data.user.user_permissions > maxPermissionLevel ? (
+                    <p className="account-delete-warning">You cannot delete this account because you have the highest permission (owner). If you still want to delete it, transfer ownership!</p>
+                ) : <p className="account-delete-warning">This action is irreversible. If you continue, all your data will be deleted.</p>}
 
-                <div className="user-info">
-                    <h3>Type "<span style={{fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)"}}>I want to delete my account</span>" below to confirm:</h3>
+                <div className="user-info" style={data.user.user_permissions > maxPermissionLevel ? { opacity: 0.4, pointerEvents: "none" } : {}}>
+                    <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)" }}>I want to delete this account</span>" below to confirm:</h3>
 
                     <div className="data-wrapper">
                         <input autoComplete="new-password" type="text" onChange={(e) => {
-                            if (e.target.value === "I want to delete my account") {
-                                document.getElementById("delete-account-button").disabled = false;
+                            if (e.target.value === "I want to delete this account") {
+                                setCanBeDeleted(true);
                             }
                             else {
-                                document.getElementById("delete-account-button").disabled = true;
+                                setCanBeDeleted(false);
                             }
                         }} />
                     </div>
 
-                    <button className="settings-submit-button red" id="delete-account-button" disabled={true} onClick={() => {
+                    <button className="settings-submit-button red" id="delete-account-button" disabled={!canBeDeleted} onClick={() => {
+                        console.log("deleting");
                         deleteAccount(data.user, popupContext, navigate);
                     }}>
                         <p>Delete Account</p>

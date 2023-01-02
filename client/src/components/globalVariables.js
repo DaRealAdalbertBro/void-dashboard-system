@@ -1,6 +1,7 @@
 
 export const defaultProfilePicture = "/assets/images/avatars/default.webp"
 export const allowSpecialCharactersInUsername = false;
+export const maxPermissionLevel = 2;
 export const NotFoundGif = [
     {
         id: 1,

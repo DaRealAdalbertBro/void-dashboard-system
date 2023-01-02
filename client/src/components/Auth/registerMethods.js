@@ -19,31 +19,33 @@ export const register = async (username, email, password, navigate) => {
             username: username,
             email: email,
             password: password,
-            signal: controller.signal,
-            validateStatus: (status) => {
-                // Resolve only if the status code is less than 500
-                // This is because we want to handle 500 (server) errors ourselves
-                return status < 500;
-            }
-        }).then((response) => {
-            // If the registration was successful, redirect to the dashboard
-            if (response.data.status || response.data.message == 'Registration successful') {
-                resolve({ status: true, message: response.data.message })
-                return navigate('/dashboard');
-            }
+        },
+            {
+                signal: controller.signal,
+                validateStatus: (status) => {
+                    // Resolve only if the status code is less than 500
+                    // This is because we want to handle 500 (server) errors ourselves
+                    return status < 500;
+                }
+            }).then((response) => {
+                // If the registration was successful, redirect to the dashboard
+                if (response.data.status || response.data.message == 'Registration successful') {
+                    resolve({ status: true, message: response.data.message })
+                    return navigate('/dashboard');
+                }
 
-            // If the registration was not successful, send an error message
-            return reject({ status: false, message: response.data.message });
+                // If the registration was not successful, send an error message
+                return reject({ status: false, message: response.data.message });
 
-        }).catch((error) => {
-            if (error.name === "CanceledError") {
-                return;
-            }
-            // If the server is down, show an error message
-            // This is because we are not handling 500 (server) errors ourselves
-            console.log(error)
-            return reject({ status: false, message: 'Something went wrong. Please try again later.' });
-        }); // end of Axios.post
+            }).catch((error) => {
+                if (error.name === "CanceledError") {
+                    return;
+                }
+                // If the server is down, show an error message
+                // This is because we are not handling 500 (server) errors ourselves
+                console.log(error)
+                return reject({ status: false, message: 'Something went wrong. Please try again later.' });
+            }); // end of Axios.post
 
         console.log("Axios sent register")
 

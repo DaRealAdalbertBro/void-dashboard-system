@@ -448,6 +448,9 @@ input[type="password" i] {
   border-radius: 8px;
 }
 
+input::placeholder {
+  user-select: none;
+}
 
 
 @keyframes spin {

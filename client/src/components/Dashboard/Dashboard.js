@@ -9,7 +9,7 @@ import { BsBoxArrowLeft } from "react-icons/bs";
 import { MdArrowDropDown } from "react-icons/md";
 
 // import dashboard methods
-import { defaultProfilePicture } from '../globalVariables';
+import { defaultProfilePicture, maxPermissionLevel } from '../globalVariables';
 import { handleNavigationClick, handleProfileDropdown, handleProfileDropdownItemClick, handleClickOutsideProfileDropdown, handleLogout } from './dashboardMethods';
 import { getUserData } from '../../utils/utils';
 
@@ -53,7 +53,7 @@ const Dashboard = ({ componentToShow }) => {
     // handle left sidebar click
     useEffect(() => {
         // get navigation item that was clicked
-        const componentRef = componentToShow ? document.getElementById((componentToShow.type.name).toString()) : document.getElementById("home");
+        const componentRef = document.getElementById((componentToShow.type.name).toString()) || document.getElementById("home");
 
         // add active class to navigation item
         if (componentRef) {
@@ -171,7 +171,7 @@ const LeftSideBar = ({ permissionLevel }) => {
 
 
             {
-                permissionLevel >= 2 &&
+                permissionLevel >= maxPermissionLevel &&
                 <div className='dashboard-left-bar-item-section'>
                     <h2>Administration</h2>
 
@@ -179,7 +179,7 @@ const LeftSideBar = ({ permissionLevel }) => {
             }
 
             {
-                permissionLevel >= 2 &&
+                permissionLevel >= maxPermissionLevel &&
                 <div className='dashboard-left-bar-item' id="UserManagement" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
                     <BiGroup />
                     <p>Users</p>

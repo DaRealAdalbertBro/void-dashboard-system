@@ -325,6 +325,8 @@ export const permissionLevelToString = (permissionLevel) => {
 
         case 2:
             return "Administrator";
+        case 3:
+            return "Owner";
 
         default:
             return "User";
@@ -341,6 +343,8 @@ export const stringToPermissionLevel = (permissionLevelString) => {
 
         case "Administrator":
             return 2;
+        case "Owner":
+            return 3;
 
         default:
             return 0;
@@ -402,7 +406,7 @@ export const Paginator = (items, page, per_page) => {
     let offset = (page - 1) * per_page;
     let paginatedItems = items.slice(offset).slice(0, per_page);
     let total_pages = Math.ceil(items.length / per_page);
-    
+
     return {
         page: page,
         per_page: per_page,

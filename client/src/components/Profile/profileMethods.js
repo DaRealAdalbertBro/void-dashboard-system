@@ -1,7 +1,7 @@
 // Description: This file contains all the methods used in the profile component
 
 import Axios from "axios";
-import { isUsernameValid, isTagValid, isEmailValid, isFileValid, isPasswordValid } from "../../utils/validateInput";
+import { isUsernameValid, isTagValid, isEmailValid, isFileValid, isPasswordValid, isPermissionLevelValid } from "../../utils/validateInput";
 import { getAverageColor } from "../../utils/utils";
 import { UpdateCustomPopup } from "../CustomPopup";
 
@@ -78,6 +78,12 @@ export const isUpdateValid = (data) => {
     const user_name = document.querySelector(".user-name-settings").value.trim() || data.user_name;
     const user_tag = document.querySelector(".user-tag-settings").value.trim() || data.user_tag;
     const user_email = document.querySelector(".user-email-settings").value.trim();
+    let user_permissions = document.querySelector(".user-permissions-settings");
+
+    // check if user_permissions exists
+    if (user_permissions) {
+        user_permissions = user_permissions.value;
+    }
 
     let updateObject = {};
 
@@ -103,8 +109,11 @@ export const isUpdateValid = (data) => {
         updateObject.user_email = user_email;
     }
 
-    // if there is valid data, check if it is different from current data
+    if (isPermissionLevelValid(user_permissions).status) {
+        updateObject.user_permissions = user_permissions;
+    }
 
+    // if there is valid data, check if it is different from current data
     if (updateObject.user_name === data.user_name && updateObject.user_tag === data.user_tag) {
         delete updateObject.user_name;
         delete updateObject.user_tag;
@@ -113,6 +122,12 @@ export const isUpdateValid = (data) => {
     if (updateObject.user_email === data.user_email) {
         delete updateObject.user_email;
     }
+
+    if (updateObject.user_permissions === data.user_permissions) {
+        delete updateObject.user_permissions;
+    }
+
+    console.log(updateObject)
 
     // check if there is any data to update than the user_id
     if (Object.keys(updateObject).length <= 1) {

@@ -14,9 +14,10 @@ const useFetch = (url, options = {}) => {
 
 
     useEffect(() => {
+        const controller = new AbortController();
 
         if (options && options.method && options.method === "POST" && options.data) {
-            Axios.post(url, options.data)
+            Axios.post(url, options.data, { signal: controller.signal })
                 .then((response) => {
                     setData(response.data);
                     setIsPending(false);
@@ -26,7 +27,7 @@ const useFetch = (url, options = {}) => {
                 });
 
         } else {
-            Axios.get(url)
+            Axios.get(url, { signal: controller.signal })
                 .then((response) => {
                     setData(response.data);
                     setIsPending(false);
@@ -37,7 +38,7 @@ const useFetch = (url, options = {}) => {
         }
 
 
-    }, [url]);
+    }, [url, options]);
 
     return { data, isPending, error };
 }

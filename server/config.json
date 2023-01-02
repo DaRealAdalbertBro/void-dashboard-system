@@ -13,6 +13,7 @@
         }
     },
     "permissions": {
+        "owner": 3,
         "administrator": 2,
         "editor": 1,
         "user": 0

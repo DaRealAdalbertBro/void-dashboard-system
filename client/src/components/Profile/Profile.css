@@ -288,6 +288,7 @@
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info .email,
+.profile-container .profile-bottom .box-wrapper .box .user-info .permissions,
 .profile-container .profile-bottom .box-wrapper .box .user-info .password {
     font-size: 24px;
     color: var(--lighter-text);
@@ -366,6 +367,17 @@
 .settings-submit-button.blue:hover {
     background-color: var(--blue-hover);
 }
+
+.settings-submit-button.red {
+    background-color: var(--red);
+    border-color: var(--red)!important;
+    color: var(--default-text);
+}
+
+.settings-submit-button.red:hover {
+    background-color: var(--red-hover);
+}
+
 
 
 .settings-submit-button:disabled {

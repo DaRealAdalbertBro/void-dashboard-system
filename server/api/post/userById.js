@@ -45,11 +45,18 @@ module.exports = function (app, db_connection) {
             .then(result => {
                 // if user is found, return true and user object
                 if (result.length) {
+                    // define if user is admin (can change permissions, etc - disabled for the self)
+                    let isAdmin = false;
+
                     // check if user has permissions to edit the user
                     // also check if user is trying to edit himself
                     // or if user is trying to edit another user that has lower permissions
                     if ((request.session.user.user_permissions >= CONFIG.permissions.administrator && request.session.user.user_permissions > result[0][tableColumns.user_permissions])) {
                         canEditUser = true;
+
+                        if (request.session.user.user_id !== result[0][tableColumns.user_id]) {
+                            isAdmin = true;
+                        }
                     }
 
                     const userObject = {
@@ -57,7 +64,7 @@ module.exports = function (app, db_connection) {
                         user_created_at: snowflakeIdCreatedAt(result[0].user_id),
                     }
 
-                    return response.send({ status: true, user: userObject, canEditProfile: canEditUser });
+                    return response.send({ status: true, user: userObject, canEditProfile: canEditUser, isAdmin: isAdmin });
                 }
 
                 // if user is not found, return false and USER_NOT_FOUND message

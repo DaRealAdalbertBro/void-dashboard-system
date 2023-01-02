@@ -8,7 +8,8 @@ export const login = (usernameRef, passwordRef, setLoginError, navigate) => {
     // Send login request
     Axios.post('http://localhost:3001/api/post/login', {
         username: usernameRef.current.value,
-        password: passwordRef.current.value,
+        password: passwordRef.current.value
+    }, {
         signal: controller.signal,
         // Validate status code
         validateStatus: (status) => {
@@ -20,7 +21,7 @@ export const login = (usernameRef, passwordRef, setLoginError, navigate) => {
         setLoginError(response.data.message);
 
         // If login is successful, redirect to dashboard
-        if (response.data.status || response.data.message == 'Login successful') {
+        if (response.data.status) {
             return navigate('/dashboard');
         }
 

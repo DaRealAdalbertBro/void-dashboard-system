@@ -134,7 +134,11 @@ module.exports = function (app, db_connection, upload) {
 
             // check if permissions are valid
             // check if permissions are not the same as the current ones
-            if (user_permissions && user_permissions !== result[0][CONFIG.database.users_table_columns.user_permissions]) {
+            // check if the user has permissions to change permissions of other users or yourself
+            if (user_permissions
+                && request.session.user.user_id != user_id
+                && user_permissions !== result[0][CONFIG.database.users_table_columns.user_permissions]
+                && request.session.user.user_permissions === CONFIG.permissions.administrator) {
                 try {
                     user_permissions = parseInt(user_permissions);
                 }

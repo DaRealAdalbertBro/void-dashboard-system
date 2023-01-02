@@ -1,4 +1,4 @@
-import { allowSpecialCharactersInUsername } from '../components/globalVariables';
+import { allowSpecialCharactersInUsername, maxPermissionLevel } from '../components/globalVariables';
 import { Buffer } from 'buffer';
 
 export const isUsernameValid = (value) => {
@@ -74,7 +74,7 @@ export const isEmailValid = (value) => {
 export const isInputValidShowErrors = (e, type) => {
     // validate email
     let validateData;
-
+    
     switch (type) {
         case "email":
             validateData = isEmailValid(e.target.value);
@@ -157,4 +157,14 @@ export const isFileValid = (file) => {
 
     // otherwise return true
     return { status: true, value: file };
+}
+
+export const isPermissionLevelValid = (value) => {
+    // check if is valid number between 0 and max permission level
+    if (!value || (isNaN(value) || value < 0 || value > maxPermissionLevel || value.length === 0)) {
+        return { status: false, value: value ? value.slice(0, -1) : "" };
+    }
+
+    // otherwise return true
+    return { status: true, value: value };
 }
