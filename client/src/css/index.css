@@ -452,6 +452,12 @@ input::placeholder {
   user-select: none;
 }
 
+button {
+  outline: none;
+  border: none;
+  user-select: none;
+}
+
 
 @keyframes spin {
   from {

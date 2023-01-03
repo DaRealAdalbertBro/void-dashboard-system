@@ -6,8 +6,9 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 
-// import register methods
+// import register methods and utils
 import { register, IsInputValid, isRegisterValid } from './registerMethods';
+import { checkUserPermissions } from '../../utils/utils';
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -19,17 +20,20 @@ const RegisterPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // redirect to login if they are not logged in or do not have the correct permissions
+        checkUserPermissions(navigate)
+
         // Prevents the form from submitting when the user presses enter
         // This is handled by the Axios request instead
         formRef.current.addEventListener('submit', (e) => {
             e.preventDefault();
         });
 
-    }, []);
+    }, [navigate]);
 
     // set the document title
     useEffect(() => {
-        document.title = "Register | Void";
+        document.title = "Add User | Void";
     }, [navigate]);
 
     useEffect(() => {
@@ -49,7 +53,7 @@ const RegisterPage = () => {
 
             <div className="login-box">
                 <form className="login-form" ref={formRef}>
-                    <h1>Register</h1>
+                    <h1>Add New User</h1>
 
                     <div className="login-input">
                         <FaUserAlt />

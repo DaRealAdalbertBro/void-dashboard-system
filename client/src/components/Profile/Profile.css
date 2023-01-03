@@ -144,7 +144,7 @@
     align-items: center;
     justify-content: center;
     margin-top: -192px;
-    background-image: linear-gradient(rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 1));
+    background-color: rgba(18, 18, 18, 0.5);
 }
 
 .profile-container .profile-bottom .box-wrapper {
@@ -167,11 +167,11 @@
     justify-content: center;
     gap: 24px;
     flex-wrap: wrap;
-    flex: 1 1 20%;
+    flex: 1 1;
 }
 
 .profile-container .profile-bottom .box-wrapper .box {
-    min-width: 100px;
+    min-width: 492px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -195,8 +195,6 @@
 .profile-container .profile-bottom .box-wrapper .box#save,
 .profile-container .profile-bottom .box-wrapper .box#password {
     width: 100%;
-    min-width: 456px;
-    min-height: 92px;
     align-items: center;
     justify-content: center;
 }
@@ -302,7 +300,7 @@
 .profile-container .profile-bottom .box-wrapper .box .user-info input.user-name-settings {
     display: flex;
     width: 100%;
-    min-width: 124px;
+    min-width: 72px;
 }
 
 .profile-container .profile-bottom .box-wrapper .box .user-info input.user-tag-settings {
@@ -315,7 +313,6 @@
 .profile-container .profile-bottom .box-wrapper .box .user-info input.user-email-settings {
     display: flex;
     width: 100%;
-    min-width: 124px;
 }
 
 .error {
@@ -325,7 +322,6 @@
 .profile-container .profile-bottom .box-wrapper .box .user-info input.user-password-settings {
     display: flex;
     width: 100%;
-    min-width: 124px;
 }
 
 .settings-submit-button {

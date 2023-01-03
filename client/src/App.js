@@ -19,12 +19,13 @@ function App() {
       <div className='App'>
 
         <Routes>
-          <Route exact path='/' element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route exact path='/login' element={<LoginPage />} />
 
           <Route path='/dashboard' element={
             <Dashboard componentToShow={<Home />} />
           } />
+          
+          <Route path="/dashboard/users/register" element={<RegisterPage />} />
 
           <Route exact path='/dashboard/profile' element={
             <Dashboard componentToShow={<Profile />} />

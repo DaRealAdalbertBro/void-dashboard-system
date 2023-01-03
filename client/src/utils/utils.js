@@ -1,5 +1,6 @@
 
 import Axios from "axios";
+import { maxPermissionLevel } from "../components/globalVariables";
 
 export const RGBtoHSV = (r, g, b) => {
     // declare variables for red, green, blue, hue, saturation, value, and difference
@@ -372,6 +373,34 @@ export const isUserLoggedIn = (navigate) => {
     });
 
     console.log("Axios sent is user logged in request.")
+
+    // cleanup, abort request
+    return () => controller.abort();
+};
+
+export const checkUserPermissions = (navigate) => {
+    const controller = new AbortController();
+
+    // check if user is logged in
+    Axios.get("http://localhost:3001/api/get/userinfo", {
+        signal: controller.signal
+    }).then((response) => {
+        if (response.data.user.user_permissions >= maxPermissionLevel) {
+            return;
+        }
+
+        return navigate("/404");
+
+    }).catch((err) => {
+        // check if error is abort error
+        if (err.name === "CanceledError") {
+            return;
+        }
+
+        console.log(err);
+    });
+
+    console.log("Axios sent get user permissions request.")
 
     // cleanup, abort request
     return () => controller.abort();

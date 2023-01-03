@@ -250,7 +250,7 @@ export const deleteAccount = (data, popupContext, navigate) => {
         // if delete was successful
         if (response.data && response.data.status) {
             // reload page
-            return response.data.deletedYourself ? navigate("/") : window.location.reload();
+            return response.data.deletedYourself ? navigate("/login") : window.location.reload();
         }
 
         // show error popup

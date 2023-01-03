@@ -493,7 +493,7 @@ const DeleteAccountSettings = ({ data, popupContext, canBeDeleted, setCanBeDelet
                     <p className="account-delete-warning">You cannot delete this account because you have the highest permission (owner). If you still want to delete it, transfer ownership!</p>
                 ) : <p className="account-delete-warning">This action is irreversible. If you continue, all your data will be deleted.</p>}
 
-                <div className="user-info" style={data.user.user_permissions > maxPermissionLevel ? { opacity: 0.4, pointerEvents: "none" } : {}}>
+                <div className="user-info" style={data.user.user_permissions > maxPermissionLevel ? { opacity: 0.4, pointerEvents: "none", userSelect: "none" } : {}}>
                     <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)" }}>I want to delete this account</span>" below to confirm:</h3>
 
                     <div className="data-wrapper">

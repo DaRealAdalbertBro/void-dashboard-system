@@ -13,6 +13,7 @@ import { permissionLevelToString, Paginator } from "../../utils/utils";
 import './UserManagement.css'
 import { averageColorToLighterGradient } from "./userManagementMethods";
 import { defaultProfilePicture } from "../globalVariables";
+import { IoMdAddCircleOutline, IoMdPersonAdd } from "react-icons/io";
 
 const UserManagement = () => {
     const [canUseLeftArrow, setCanUseLeftArrow] = useState(false);
@@ -30,6 +31,7 @@ const UserManagement = () => {
     useEffect(() => {
         const controller = new AbortController();
 
+        // get user list from server
         Axios.post("http://localhost:3001/api/post/fetchUserList", {
             signal: controller.signal
         }).then(response => {
@@ -57,6 +59,9 @@ const UserManagement = () => {
             setIsPending(false);
             return setError(error.message);
         });
+
+        // abort the request if the component unmounts
+        return () => controller.abort();
     }, []);
 
     // handle the arrow click
@@ -129,6 +134,10 @@ const UserManagement = () => {
         <div className="container full flex flex-column">
             <div className="search-bar">
                 <input type="text" placeholder="Search &#x1F50E;&#xFE0E;" onChange={(e) => handleSearch(e)} />
+                <button className="add-new-user" onClick={() => navigate("/dashboard/users/register")}>
+                    <p>Add new user</p>
+                    <IoMdPersonAdd />
+                </button>
             </div>
             {isPending && <LoadingCircle />}
             <div className="list-wrapper">
