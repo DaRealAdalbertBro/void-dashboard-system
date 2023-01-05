@@ -31,23 +31,6 @@ module.exports = function (db_connection) {
         });
     };
 
-    const emailOrUsernameExists = (user_name, isUsernameEmail = false, selector = config_user_id) => {
-        return new Promise((resolve, reject) => {
-            db_connection.query(
-                `SELECT ${selector} FROM ${users_table_name} WHERE ${isUsernameEmail ? config_user_email : config_user_name} = ?`,
-                [user_name],
-                (error, result) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    else {
-                        return resolve(result);
-                    }
-                }
-            );
-        });
-    };
-
     const insertNewUser = (user_id, user_name, user_tag, user_email, user_password_hash) => {
         return new Promise((resolve, reject) => {
             db_connection.query(
@@ -242,7 +225,6 @@ module.exports = function (db_connection) {
     return {
         // GET / SELECT
         idOrUsernameExists,
-        emailOrUsernameExists,
         fetchById,
         fetchByName,
         fetchByEmail,

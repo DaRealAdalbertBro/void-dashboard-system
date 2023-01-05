@@ -4,41 +4,27 @@ import { Buffer } from 'buffer';
 export const isUsernameValid = (value) => {
     // look for special characters if enabled
     if (!allowSpecialCharactersInUsername) {
-        const regex = /^[0-9a-zA-Z_.-]+$/;
-        // test if value contains special characters
-        if (!regex.test(value)) {
-            // remove the last character if it is a special character
-            return { status: false, value: value.slice(0, -1) };
-        }
+        // replace using regex
+        value = value.replace(/[^\w\s.-]/gi, '');
 
-        // check for 3 dots, dashes or underscores in a row to prevent abuse
-        if ((value[value.length - 1] === '.' && value[value.length - 2] === '.' && value[value.length - 3] === '.')
-            || (value[value.length - 1] === '-' && value[value.length - 2] === '-' && value[value.length - 3] === '-')
-            || (value[value.length - 1] === '_' && value[value.length - 2] === '_' && value[value.length - 3] === '_')) {
-            // remove the last character if the repetition is found
-            return { status: false, value: value.slice(0, -1) };
-        }
+        // remove 3 dots, dashes or underscores in a row to prevent abuse
+        value = value.replace(/(\.{3,})|(-{3,})|(_{3,})/g, '');
     }
 
     // check the length of the username
     if (value.length < 4 || value.length > 32 || Buffer.byteLength(value, "utf-8") > 64) {
         // remove all extra characters if the length is too long
-        return { status: false, value: value.slice(0, 32) };
+        return { status: 0, value: value.slice(0, 32) };
     }
 
     // return the value if all checks passed
-    return { status: true, value: value };
+    return { status: 1, value: value };
 };
 
 
 export const isTagValid = (value) => {
-    // look for special characters
-    const regex = /^\d+$/;
-    // test if value contains special characters
-    if (!regex.test(value)) {
-        // remove the last character if it is a special character
-        return { status: false, value: value.slice(0, -1) };
-    }
+    // look for everything  that is not number between 0-9
+    value = value.replace(/[^0-9]/g, '');
 
     return { status: true, value: value };
 };

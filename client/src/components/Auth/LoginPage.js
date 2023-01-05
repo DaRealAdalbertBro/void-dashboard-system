@@ -7,16 +7,16 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 
 // import login methods
-import { validateUsername, validatePassword, login } from './loginMethods';
+import { login } from './loginMethods';
 import { isUserLoggedIn } from '../../utils/utils';
+import { isEmailValid, isPasswordValid } from '../../utils/validateInput';
 
 
 const LoginPage = () => {
     const [loginError, setLoginError] = useState('');
     const formRef = useRef();
-    const usernameRef = useRef();
+    const emailRef = useRef();
     const passwordRef = useRef();
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,8 +42,8 @@ const LoginPage = () => {
                     <div className="login-input">
                         <FaUserAlt />
 
-                        <input type="text" placeholder="Enter username" ref={usernameRef} onChange={(e) => {
-                            validateUsername(e, loginError, setLoginError);
+                        <input type="text" placeholder="Enter email" ref={emailRef} onChange={(e) => {
+                            e.currentTarget.value = isEmailValid(e.currentTarget.value).value
                         }} />
 
                         <div className="username-alert-icon">
@@ -55,7 +55,7 @@ const LoginPage = () => {
                         <FaLock />
 
                         <input type="password" placeholder="Enter password" ref={passwordRef} onChange={(e) => {
-                            validatePassword(e, loginError, setLoginError);
+                            e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
                         }} />
 
                         <div className="password-alert-icon">
@@ -66,7 +66,7 @@ const LoginPage = () => {
                     <div className="login-error">{loginError}</div>
 
 
-                    <button type="submit" className="login-button" onClick={() => login(usernameRef, passwordRef, setLoginError, navigate)}>Continue</button>
+                    <button type="submit" className="login-button" onClick={() => login(emailRef, passwordRef, setLoginError, navigate)}>Continue</button>
 
                 </form>
 

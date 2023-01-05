@@ -28,7 +28,7 @@
         "USER_DELETED": "User has been deleted successfully.",
         "REGISTRATION_SUCCESSFUL": "Registration successful.",
         "SOMETHING_WENT_WRONG": "Something went wrong. Please try again later.",
-        "INVALID_CREDENTIALS": "Invalid username, email or password.",
+        "INVALID_CREDENTIALS": "Invalid email or password.",
         "LOGIN_SUCCESSFUL": "Login successful.",
         "NOT_LOGGED_IN": "You are not logged in.",
         "LOGOUT_SUCCESSFUL": "Logout successful.",

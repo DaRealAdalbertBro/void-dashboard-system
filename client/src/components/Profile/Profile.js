@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // import react icons
@@ -18,7 +18,7 @@ import "./Profile.css";
 
 // import utils
 import { isUsernameValid, isTagValid, isPasswordValid, isFileValid, isInputValidShowErrors, isPermissionLevelValid } from "../../utils/validateInput";
-import { isUpdateValid, isPasswordUpdateValid, submitSettings, deleteAccount } from "./profileMethods";
+import { isUpdateValid, isPasswordUpdateValid, submitSettings, deleteAccount, isTransferUpdateValid, transferOwnership } from "./profileMethods";
 import { addPaddingToStringNumber, getAverageColor, averageColorToGradient, permissionLevelToString } from "../../utils/utils";
 
 // import components
@@ -36,7 +36,6 @@ const Profile = () => {
     const [canSaveSettings, setCanSaveSettings] = useState(false);
     const [canSavePassword, setCanSavePassword] = useState(false);
     const [canSaveAvatar, setCanSaveAvatar] = useState(false);
-    const [canBeDeleted, setCanBeDeleted] = useState(false);
 
     // store avatar file for later use
     const [avatarFile, setAvatarFile] = useState(null);
@@ -118,7 +117,7 @@ const Profile = () => {
                         user_id: data.user.user_id,
                         user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]`,
                     }, {
-                        signal: controller.signal
+                    signal: controller.signal
                 }).then((response) => {
                     // if update was successful
                     if (response.data.status) {
@@ -164,7 +163,7 @@ const Profile = () => {
                                         <div className="settings-wrapper">
                                             <AvatarSettings data={data} popupContext={popupContext} canSaveAvatar={canSaveAvatar} setCanSaveAvatar={setCanSaveAvatar} avatarFile={avatarFile} setAvatarFile={setAvatarFile} />
 
-                                            <DeleteAccountSettings data={data} popupContext={popupContext} canBeDeleted={canBeDeleted} setCanBeDeleted={setCanBeDeleted} />
+                                            <DeleteAccountSettings data={data} popupContext={popupContext} />
                                         </div>
 
 
@@ -308,7 +307,7 @@ const UserSettings = ({ data, popupContext, canSaveSettings, setCanSaveSettings,
                     ) : null}
 
                     <button className="settings-submit-button" disabled={!canSaveSettings} onClick={() => {
-                        submitSettings(data.user, {
+                        submitSettings(data, {
                             type: "userinfo",
                             canSave: [canSaveSettings, setCanSaveSettings],
                             popupContext
@@ -324,27 +323,29 @@ const UserSettings = ({ data, popupContext, canSaveSettings, setCanSaveSettings,
                 <h2>Change Password</h2>
                 <div className="user-info">
 
-                    <h3>Old password</h3>
-                    <div className="data-wrapper">
-                        <MdOutlineLock className="password" />
+                    {!data.isAdmin && <h3>Old password</h3>}
+                    {!data.isAdmin &&
+                        <div className="data-wrapper">
+                            <MdOutlineLock className="password" />
 
-                        <div className="vertical-divider"></div>
+                            <div className="vertical-divider"></div>
 
-                        <input autoComplete="new-password" type="password" onChange={(e) => {
+                            <input autoComplete="new-password" type="password" onChange={(e) => {
 
-                            // remove error when typing
-                            if (e.currentTarget.classList.contains("error")) {
-                                e.currentTarget.classList.remove("error");
-                            }
-                        }} onBlur={e => {
-                            // validate password
-                            e.currentTarget.value = isInputValidShowErrors(e, "password");
+                                // remove error when typing
+                                if (e.currentTarget.classList.contains("error")) {
+                                    e.currentTarget.classList.remove("error");
+                                }
+                            }} onBlur={e => {
+                                // validate password
+                                e.currentTarget.value = isInputValidShowErrors(e, "password");
 
-                            // check if can save
-                            setCanSavePassword(isPasswordUpdateValid(data.user).status);
+                                // check if can save
+                                setCanSavePassword(isPasswordUpdateValid(data.user, data.isAdmin).status);
 
-                        }} className="user-password-settings" id="user-old-password-settings" minLength={8} maxLength={255} />
-                    </div>
+                            }} className="user-password-settings" id="user-old-password-settings" minLength={8} maxLength={255} />
+                        </div>
+                    }
 
                     <h3>New password</h3>
                     <div className="data-wrapper">
@@ -359,7 +360,7 @@ const UserSettings = ({ data, popupContext, canSaveSettings, setCanSaveSettings,
                             isInputValidShowErrors(e, "password_match");
 
                             // check if can save
-                            setCanSavePassword(isPasswordUpdateValid(data.user).status);
+                            setCanSavePassword(isPasswordUpdateValid(data.user, data.isAdmin).status);
 
                         }} className="user-password-settings" id="user-new-password-settings" minLength={8} maxLength={255} />
                     </div>
@@ -377,12 +378,12 @@ const UserSettings = ({ data, popupContext, canSaveSettings, setCanSaveSettings,
                             isInputValidShowErrors(e, "password_match");
 
                             // check if can save
-                            setCanSavePassword(isPasswordUpdateValid(data.user).status);
+                            setCanSavePassword(isPasswordUpdateValid(data.user, data.isAdmin).status);
                         }} className="user-password-settings" id="user-new-password-confirm-settings" minLength={8} maxLength={255} />
                     </div>
 
                     <button className="settings-submit-button" disabled={!canSavePassword} onClick={() => {
-                        submitSettings(data.user, {
+                        submitSettings(data, {
                             type: "password",
                             canSave: [canSavePassword, setCanSavePassword],
                             popupContext
@@ -448,7 +449,7 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
 
                     <div className="submit-wrapper">
                         <button className="settings-submit-button" disabled={!canSaveAvatar} onClick={() => {
-                            submitSettings(data.user, {
+                            submitSettings(data, {
                                 type: "avatar",
                                 avatarFile: avatarFile,
                                 canSave: [canSaveAvatar, setCanSaveAvatar],
@@ -481,8 +482,11 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
     );
 };
 
-const DeleteAccountSettings = ({ data, popupContext, canBeDeleted, setCanBeDeleted }) => {
+const DeleteAccountSettings = ({ data, popupContext }) => {
     const navigate = useNavigate();
+
+    const [canBeTransferred, setCanBeTransferred] = useState(false);
+    const [canBeDeleted, setCanBeDeleted] = useState(false);
 
     return (
         <div className="box" id="delete-account">
@@ -494,7 +498,7 @@ const DeleteAccountSettings = ({ data, popupContext, canBeDeleted, setCanBeDelet
                 ) : <p className="account-delete-warning">This action is irreversible. If you continue, all your data will be deleted.</p>}
 
                 <div className="user-info" style={data.user.user_permissions > maxPermissionLevel ? { opacity: 0.4, pointerEvents: "none", userSelect: "none" } : {}}>
-                    <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)" }}>I want to delete this account</span>" below to confirm:</h3>
+                    <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)", userSelect: "none" }}>I want to delete this account</span>" below to confirm:</h3>
 
                     <div className="data-wrapper">
                         <input autoComplete="new-password" type="text" onChange={(e) => {
@@ -508,14 +512,49 @@ const DeleteAccountSettings = ({ data, popupContext, canBeDeleted, setCanBeDelet
                     </div>
 
                     <button className="settings-submit-button red" id="delete-account-button" disabled={!canBeDeleted} onClick={() => {
-                        console.log("deleting");
                         deleteAccount(data.user, popupContext, navigate);
                     }}>
                         <p>Delete Account</p>
                     </button>
 
                 </div>
+
+                {data.user.user_permissions > maxPermissionLevel && <h2 className="red">Transfer Ownership</h2>}
+
+                {data.user.user_permissions > maxPermissionLevel ? (
+                    <div className="user-info">
+                        <h3>Transfer ownership to (User ID):</h3>
+
+                        <div className="data-wrapper">
+                            <input autoComplete="new-password" type="text" id="user-id-transfer" onChange={(e) => {
+                                // check if input is number
+                                e.target.value = e.target.value.replace(/\D/g, '');
+
+                                setCanBeTransferred(isTransferUpdateValid(data.user).status);
+
+                            }} />
+                        </div>
+
+                        <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)", userSelect: "none" }}>I want to transfer ownership</span>" below to confirm:</h3>
+
+                        <div className="data-wrapper">
+                            <input autoComplete="new-password" type="text" id="transfer-confirm" onChange={(e) => {
+                                setCanBeTransferred(isTransferUpdateValid(data.user).status);
+                            }} />
+                        </div>
+
+                        <button className="settings-submit-button red" id="transfer-ownership-button" disabled={!canBeTransferred} onClick={() => {
+                            transferOwnership(data.user, popupContext);
+                        }}>
+                            <p>Transfer Ownership</p>
+                        </button>
+
+
+                    </div>
+
+                ) : null}
             </div>
+
         </div>
     );
 };
