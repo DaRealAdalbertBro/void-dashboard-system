@@ -1,11 +1,12 @@
 import Axios from 'axios';
+import { apiServerIp } from '../globalVariables';
 
 export const login = (usernameRef, passwordRef, setLoginError, navigate) => {
     // Declare controller
     const controller = new AbortController();
 
     // Send login request
-    Axios.post('http://localhost:3001/api/post/login', {
+    Axios.post(apiServerIp + '/api/post/login', {
         username: usernameRef.current.value,
         password: passwordRef.current.value
     }, {
@@ -24,8 +25,12 @@ export const login = (usernameRef, passwordRef, setLoginError, navigate) => {
             return navigate('/dashboard');
         }
 
-    }).catch((error) => {
-        // If request is aborted or request failed, return
+    }).catch(error => {
+        if (error.name === "CanceledError") {
+            return;
+        }
+
+        // If server is down, show error message
         setLoginError('Something went wrong. Please try again later.');
     });
 

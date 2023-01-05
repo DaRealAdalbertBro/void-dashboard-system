@@ -125,7 +125,7 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
                         <div className='profile-dropdown'>
                             <button className='profile-dropdown-item' onClick={() => handleProfileDropdownItemClick("/dashboard/profile", setProfileDropdownOpen, navigate)}>
                                 <BiCog />
-                                <p>My profile</p>
+                                <p>My Account</p>
                             </button>
 
                             <div className="profile-dropdown-divider" />

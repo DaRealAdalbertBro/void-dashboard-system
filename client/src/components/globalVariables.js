@@ -1,7 +1,10 @@
 
 export const defaultProfilePicture = "/assets/images/avatars/default.webp"
+
 export const allowSpecialCharactersInUsername = false;
-export const maxPermissionLevel = 2;
+
+export const maxPermissionLevel = 2 // 0 = user, 1 = moderator, 2 = admin, OWNER is not included in this;
+
 export const NotFoundGif = [
     {
         id: 1,
@@ -29,3 +32,5 @@ export const NotFoundGif = [
         message: <p>Who was it? You did it, didn't you... I saw that you were having fun with the <span className='error-code'>Error 404</span>, and don't try to lie to me.</p>
     }
 ]
+
+export const apiServerIp = "http://localhost:3001";

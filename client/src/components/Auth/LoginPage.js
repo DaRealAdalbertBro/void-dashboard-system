@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 
 // import icons
 import { FaUserAlt, FaLock } from "react-icons/fa";
-import { FiAlertCircle } from "react-icons/fi";
 
 // import login methods
 import { login } from './loginMethods';
 import { isUserLoggedIn } from '../../utils/utils';
 import { isEmailValid, isPasswordValid } from '../../utils/validateInput';
 
+// import css
+import './LoginPage.css';
 
 const LoginPage = () => {
     const [loginError, setLoginError] = useState('');
@@ -45,10 +46,6 @@ const LoginPage = () => {
                         <input type="text" placeholder="Enter email" ref={emailRef} onChange={(e) => {
                             e.currentTarget.value = isEmailValid(e.currentTarget.value).value
                         }} />
-
-                        <div className="username-alert-icon">
-                            <FiAlertCircle />
-                        </div>
                     </div>
 
                     <div className="login-input">
@@ -57,10 +54,6 @@ const LoginPage = () => {
                         <input type="password" placeholder="Enter password" ref={passwordRef} onChange={(e) => {
                             e.currentTarget.value = isPasswordValid(e.currentTarget.value).value;
                         }} />
-
-                        <div className="password-alert-icon">
-                            <FiAlertCircle />
-                        </div>
                     </div>
 
                     <div className="login-error">{loginError}</div>

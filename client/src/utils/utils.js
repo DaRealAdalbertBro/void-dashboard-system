@@ -1,6 +1,6 @@
 
 import Axios from "axios";
-import { maxPermissionLevel } from "../components/globalVariables";
+import { apiServerIp, maxPermissionLevel } from "../components/globalVariables";
 
 export const RGBtoHSV = (r, g, b) => {
     // declare variables for red, green, blue, hue, saturation, value, and difference
@@ -356,7 +356,7 @@ export const isUserLoggedIn = (navigate) => {
     const controller = new AbortController();
 
     // check if user is logged in
-    Axios.get("http://localhost:3001/api/get/userinfo", {
+    Axios.get(apiServerIp + "/api/get/userinfo", {
         signal: controller.signal
     }).then((response) => {
         // check if user is logged in
@@ -382,7 +382,7 @@ export const checkUserPermissions = (navigate) => {
     const controller = new AbortController();
 
     // check if user is logged in
-    Axios.get("http://localhost:3001/api/get/userinfo", {
+    Axios.get(apiServerIp + "/api/get/userinfo", {
         signal: controller.signal
     }).then((response) => {
         if (response.data.user.user_permissions >= maxPermissionLevel) {
@@ -410,7 +410,7 @@ export const getUserData = (controller) => {
     return new Promise((resolve, reject) => {
         // check if user is logged in
         // Send request to get user data
-        Axios.get("http://localhost:3001/api/get/userinfo", {
+        Axios.get(apiServerIp + "/api/get/userinfo", {
             signal: controller.signal
         }).then((response) => {
             // return user data

@@ -12,8 +12,8 @@ import { permissionLevelToString, Paginator } from "../../utils/utils";
 // import css
 import './UserManagement.css'
 import { averageColorToLighterGradient } from "./userManagementMethods";
-import { defaultProfilePicture } from "../globalVariables";
-import { IoMdAddCircleOutline, IoMdPersonAdd } from "react-icons/io";
+import { apiServerIp, defaultProfilePicture } from "../globalVariables";
+import { IoMdPersonAdd } from "react-icons/io";
 
 const UserManagement = () => {
     const [canUseLeftArrow, setCanUseLeftArrow] = useState(false);
@@ -32,7 +32,7 @@ const UserManagement = () => {
         const controller = new AbortController();
 
         // get user list from server
-        Axios.post("http://localhost:3001/api/post/fetchUserList", {
+        Axios.post(apiServerIp + "/api/post/fetchUserList", {
             signal: controller.signal
         }).then(response => {
             setIsPending(false)
@@ -56,6 +56,10 @@ const UserManagement = () => {
             // if there was an error, return it
             return setError(response.data.message);
         }).catch(error => {
+            if (error.name === "CanceledError") {
+                return;
+            }
+            
             setIsPending(false);
             return setError(error.message);
         });

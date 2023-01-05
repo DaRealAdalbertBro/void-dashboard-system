@@ -10,6 +10,9 @@ import { MdOutlineAlternateEmail } from "react-icons/md";
 import { register, IsInputValid, isRegisterValid } from './registerMethods';
 import { checkUserPermissions } from '../../utils/utils';
 
+// import css
+import './LoginPage.css';
+
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -99,12 +102,12 @@ const RegisterPage = () => {
                         if (!canSaveButton) return;
 
                         // send the register request
-                        const reg = await register(username, email, password, navigate)
+                        const registerRequest = await register(username, email, password, navigate)
                             .then(response => response)
                             .catch(err => err);
 
                         // show the error message and disable the save button after the request is done
-                        setRegisterError(reg.message);
+                        setRegisterError(registerRequest.message);
                         setCanSaveButton(false);
 
                     }}>Continue</button>

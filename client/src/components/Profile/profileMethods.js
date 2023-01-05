@@ -4,6 +4,7 @@ import Axios from "axios";
 import { isUsernameValid, isTagValid, isEmailValid, isFileValid, isPasswordValid, isPermissionLevelValid } from "../../utils/validateInput";
 import { getAverageColor } from "../../utils/utils";
 import { UpdateCustomPopup } from "../CustomPopup";
+import { apiServerIp } from "../globalVariables";
 
 /////////////////////////////////////////////
 // * VALID OPTIONS: *
@@ -50,7 +51,7 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
     }
 
     // send update request
-    const response = await Axios.post("http://localhost:3001/api/post/updateuser",
+    const response = await Axios.post(apiServerIp + "/api/post/updateuser",
         canUpdateData.value,
         { headers: { ...canUpdateData.headers } })
         .then(response => response)
@@ -177,10 +178,8 @@ export const isAvatarUpdateValid = (data, image) => {
             const averageColor = getAverageColor(imgElement, 1);
             formData.append("user_banner_color", `[${averageColor.R},${averageColor.G},${averageColor.B}]`);
 
-            // TODO - check if image is different from current image, not working right now, because of the file name being different all the time
             if (data.user_avatar_file !== image.name) {
                 return resolve({ status: true, value: formData, headers: { "Content-Type": "multipart/form-data" } });
-
             }
 
             // revoke object url if all checks fail
@@ -246,7 +245,7 @@ export const deleteAccount = (data, popupContext, navigate) => {
 
     const controller = new AbortController();
 
-    Axios.post("http://localhost:3001/api/post/deleteUser", {
+    Axios.post(apiServerIp + "/api/post/deleteUser", {
         user_id: data.user_id
     }, {
         signal: controller.signal
@@ -267,6 +266,10 @@ export const deleteAccount = (data, popupContext, navigate) => {
             ]
         );
     }).catch(error => {
+        if (error.name === "CanceledError") {
+            return;
+        }
+
         // show error popup
         UpdateCustomPopup(popupContext.active,
             popupContext.title,
@@ -327,7 +330,7 @@ export const transferOwnership = (data, popupContext) => {
 
     const controller = new AbortController();
 
-    Axios.post("http://localhost:3001/api/post/transferOwnership", {
+    Axios.post(apiServerIp + "/api/post/transferOwnership", {
         user_id: isValid.value.user_id,
         user_id_transfer: isValid.value.user_transfer_to
     }, {

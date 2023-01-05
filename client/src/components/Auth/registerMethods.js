@@ -2,9 +2,10 @@ import Axios from 'axios'
 
 // Import the validation functions
 import { isUsernameValid, isEmailValid, isPasswordValid } from '../../utils/validateInput';
+import { apiServerIp } from '../globalVariables';
 
 // Register a new user
-export const register = async (username, email, password, navigate) => {
+export const register = (username, email, password, navigate) => {
     return new Promise((resolve, reject) => {
         // check if data is valid
         if (!isRegisterValid(username, email, password).status) {
@@ -15,7 +16,7 @@ export const register = async (username, email, password, navigate) => {
         const controller = new AbortController();
 
         // Send a POST request to the server
-        Axios.post('http://localhost:3001/api/post/register', {
+        Axios.post(apiServerIp + '/api/post/register', {
             username: username,
             email: email,
             password: password,
@@ -29,7 +30,7 @@ export const register = async (username, email, password, navigate) => {
                 }
             }).then((response) => {
                 // If the registration was successful, redirect to the dashboard
-                if (response.data.status || response.data.message == 'Registration successful') {
+                if (response.data.status) {
                     resolve({ status: true, message: response.data.message })
                     return navigate('/dashboard');
                 }
@@ -43,7 +44,6 @@ export const register = async (username, email, password, navigate) => {
                 }
                 // If the server is down, show an error message
                 // This is because we are not handling 500 (server) errors ourselves
-                console.log(error)
                 return reject({ status: false, message: 'Something went wrong. Please try again later.' });
             }); // end of Axios.post
 

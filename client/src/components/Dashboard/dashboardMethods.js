@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import { apiServerIp } from '../globalVariables';
 
 export const handleClickOutsideProfileDropdown = (e, setProfileDropdownOpen, profileDropdownOpen) => {
     // if profileDropdownOpen is closed, return
@@ -75,7 +76,7 @@ export const handleLogout = (navigate) => {
     const controller = new AbortController();
 
     // send logout request to server
-    Axios.post('http://localhost:3001/api/post/logout', {
+    Axios.post(apiServerIp + '/api/post/logout', {
         signal: controller.signal,
     }).then((response) => {
         // if operation was successful, navigate to login page

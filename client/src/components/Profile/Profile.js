@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // import react icons
@@ -11,7 +11,7 @@ import { BsShieldLock } from "react-icons/bs";
 import { BiKey } from "react-icons/bi";
 
 // import default profile picture
-import { defaultProfilePicture, maxPermissionLevel } from '../globalVariables';
+import { apiServerIp, defaultProfilePicture, maxPermissionLevel } from '../globalVariables';
 
 // import css
 import "./Profile.css";
@@ -59,7 +59,7 @@ const Profile = () => {
         const controller = new AbortController();
 
         // get user data from server
-        Axios.post("http://localhost:3001/api/post/userById", {
+        Axios.post(apiServerIp + "/api/post/userById", {
             user_id: userID
         }, {
             signal: controller.signal
@@ -112,7 +112,7 @@ const Profile = () => {
                 banner.style.background = gradient;
 
                 // store this color in database
-                Axios.post("http://localhost:3001/api/post/updateuser",
+                Axios.post(apiServerIp + "/api/post/updateuser",
                     {
                         user_id: data.user.user_id,
                         user_banner_color: `[${averageColor.R},${averageColor.G},${averageColor.B}]`,
