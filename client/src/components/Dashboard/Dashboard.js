@@ -163,6 +163,8 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
                                 <p style={{textTransform: "capitalize"}}>{currentTheme} mode</p>
                             </button>
 
+                            <div className="profile-dropdown-divider" />
+
                             <button className='profile-dropdown-item' onClick={() => handleLogout(navigate)}>
                                 <BsBoxArrowLeft />
                                 <p>Sign Out</p>
