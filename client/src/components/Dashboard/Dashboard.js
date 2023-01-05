@@ -1,20 +1,24 @@
 // import modules
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // import icons
-import { BiGroup } from "react-icons/bi";
-import { FaBars, FaHome, FaUserAlt } from "react-icons/fa";
+import { BiCog, BiGroup } from "react-icons/bi";
+import { FaBars, FaHome } from "react-icons/fa";
 import { BsBoxArrowLeft } from "react-icons/bs";
-import { MdArrowDropDown } from "react-icons/md";
+import { HiOutlineDocumentText } from "react-icons/hi";
+import { MdArrowDropDown, MdOutlineBugReport } from "react-icons/md";
 
 // import dashboard methods
 import { defaultProfilePicture, maxPermissionLevel } from '../globalVariables';
-import { handleNavigationClick, handleProfileDropdown, handleProfileDropdownItemClick, handleClickOutsideProfileDropdown, handleLogout } from './dashboardMethods';
-import { getUserData } from '../../utils/utils';
+import { handleNavigationClick, handleProfileDropdown, handleProfileDropdownItemClick, handleClickOutsideProfileDropdown, handleLogout, handleLeftSidebarToggle } from './dashboardMethods';
+import { getTheme, getUserData, toggleTheme } from '../../utils/utils';
+
+import { HiOutlineLightBulb, HiOutlineMoon } from 'react-icons/hi';
 
 // import dashboard css
 import './Dashboard.css';
+import { AiFillGithub } from 'react-icons/ai';
 
 const Dashboard = ({ componentToShow }) => {
     const navigate = useNavigate();
@@ -22,6 +26,7 @@ const Dashboard = ({ componentToShow }) => {
     const [email, setEmail] = useState("");
     const [permissionLevel, setPermissionLevel] = useState(0);
     const [profilePicture, setProfilePicture] = useState("");
+    const [pageLoading, setPageLoading] = useState(true);
 
     // get user info from server
     useEffect(() => {
@@ -36,11 +41,13 @@ const Dashboard = ({ componentToShow }) => {
                 setEmail(response.data.user.user_email);
                 setPermissionLevel(response.data.user.user_permissions);
                 setProfilePicture(response.data.user.user_avatar_url || defaultProfilePicture);
+
+                setPageLoading(false);
                 return;
             }
 
             // if user is not logged in, redirect to login page
-            return navigate('/');
+            return navigate('/login');
         });
 
         // set document title
@@ -53,7 +60,7 @@ const Dashboard = ({ componentToShow }) => {
     // handle left sidebar click
     useEffect(() => {
         // get navigation item that was clicked
-        const componentRef = document.getElementById((componentToShow.type.name).toString()) || document.getElementById("home");
+        const componentRef = document.getElementById((componentToShow.type.name).toString());
 
         // add active class to navigation item
         if (componentRef) {
@@ -66,7 +73,7 @@ const Dashboard = ({ componentToShow }) => {
                 componentRef.classList.remove('active');
             }
         }
-    }, [componentToShow]);
+    }, [componentToShow, pageLoading]);
 
     return (
         <div className="dashboard-container">
@@ -86,6 +93,7 @@ const Dashboard = ({ componentToShow }) => {
 const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) => {
     const navigate = useNavigate();
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState(null);
 
     // handle profile dropdown click
     useEffect(() => {
@@ -96,10 +104,10 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
 
         document.onmousedown = (e) => handleClickOutsideProfileDropdown(e, setProfileDropdownOpen, profileDropdownOpen);
 
+        setCurrentTheme(getTheme());
+
         // remove event listener when component unmounts
-        return () => {
-            document.onmousedown = null;
-        }
+        return () => document.onmousedown = null;
 
     }, [profileDropdownOpen]);
 
@@ -118,12 +126,42 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
 
                     {profileDropdownOpen &&
                         <div className='profile-dropdown'>
-                            <button className='profile-dropdown-item' onClick={() => handleProfileDropdownItemClick("profile", setProfileDropdownOpen, navigate)}>
-                                <FaUserAlt />
-                                <p>My profile</p>
+                            <button className='profile-dropdown-item' onClick={() => handleProfileDropdownItemClick("/dashboard/profile", setProfileDropdownOpen, navigate)}>
+                                <BiCog />
+                                <p>My Account</p>
                             </button>
 
                             <div className="profile-dropdown-divider" />
+
+                            <div className='profile-dropdown-item-section'>Help & Support</div>
+
+                            <button className='profile-dropdown-item' onClick={() => window.open("https://github.com/DaRealAdalbertBro/void-dashboard-system", "_blank")}>
+                                <AiFillGithub />
+                                <p>GitHub</p>
+                            </button>
+
+                            <button className='profile-dropdown-item' onClick={() => window.open("https://github.com/DaRealAdalbertBro/void-dashboard-system/wiki", "_blank")}>
+                                <HiOutlineDocumentText />
+                                <p>Documentation</p>
+                            </button>
+
+                            <button className='profile-dropdown-item' onClick={() => window.open("https://github.com/DaRealAdalbertBro/void-dashboard-system/issues/new", "_blank")}>
+                                <MdOutlineBugReport />
+                                <p>Report a Bug</p>
+                            </button>
+
+                            <div className="profile-dropdown-divider" />
+
+                            <div className='profile-dropdown-item-section'>Themes</div>
+
+                            <button className='profile-dropdown-item' onClick={() => {
+                                toggleTheme();
+
+                                setProfileDropdownOpen(false);
+                            }}>
+                                {currentTheme === "light" ? <HiOutlineLightBulb /> : <HiOutlineMoon />}
+                                <p style={{textTransform: "capitalize"}}>{currentTheme} mode</p>
+                            </button>
 
                             <button className='profile-dropdown-item' onClick={() => handleLogout(navigate)}>
                                 <BsBoxArrowLeft />
@@ -147,9 +185,29 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
 const LeftSideBar = ({ permissionLevel }) => {
     const navigate = useNavigate();
 
+    const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
+
+    // detect window resize
+    useLayoutEffect(() => {
+        function onUpdateSize() {
+            // get width
+            const width = window.innerWidth;
+            if ((leftSidebarOpen && width < 768 && width > 700) || (!leftSidebarOpen && width > 768 && width < 836)) {
+                handleLeftSidebarToggle(leftSidebarOpen, setLeftSidebarOpen);
+            }
+        }
+
+        // add event listener
+        window.addEventListener('resize', onUpdateSize);
+        onUpdateSize();
+
+        // remove event listener when component unmounts
+        return () => window.removeEventListener('resize', onUpdateSize);
+    }, [leftSidebarOpen]);
+
     return (
         <div className='dashboard-left-bar'>
-            <div className='dashboard-header-title'>
+            <div className='dashboard-header-title' onClick={() => handleLeftSidebarToggle(leftSidebarOpen, setLeftSidebarOpen)}>
                 <h1>Dashboard</h1>
                 <FaBars />
             </div>
@@ -159,16 +217,10 @@ const LeftSideBar = ({ permissionLevel }) => {
             </div>
 
             {/* BAR ITEMS / SECTIONS */}
-            <div className='dashboard-left-bar-item' id="home" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
+            <button className='dashboard-left-bar-item' id="Home" onClick={() => handleNavigationClick("Home", navigate)}>
                 <FaHome />
                 <p>Home</p>
-            </div>
-
-            <div className='dashboard-left-bar-item' id="calendar" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
-                <FaHome />
-                <p>Calendar</p>
-            </div>
-
+            </button>
 
             {
                 permissionLevel >= maxPermissionLevel &&
@@ -180,10 +232,10 @@ const LeftSideBar = ({ permissionLevel }) => {
 
             {
                 permissionLevel >= maxPermissionLevel &&
-                <div className='dashboard-left-bar-item' id="UserManagement" onClick={(e) => handleNavigationClick(e.target.id, navigate)}>
+                <button className='dashboard-left-bar-item' id="UserManagement" onClick={(e) => handleNavigationClick("UserManagement", navigate)}>
                     <BiGroup />
                     <p>Users</p>
-                </div>
+                </button>
             }
 
         </div>

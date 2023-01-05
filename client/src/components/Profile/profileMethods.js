@@ -4,6 +4,7 @@ import Axios from "axios";
 import { isUsernameValid, isTagValid, isEmailValid, isFileValid, isPasswordValid, isPermissionLevelValid } from "../../utils/validateInput";
 import { getAverageColor } from "../../utils/utils";
 import { UpdateCustomPopup } from "../CustomPopup";
+import { apiServerIp } from "../globalVariables";
 
 /////////////////////////////////////////////
 // * VALID OPTIONS: *
@@ -23,15 +24,15 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
     // check if update is valid
     switch (options.type) {
         case "userinfo":
-            canUpdateData = await isUpdateValid(data);
+            canUpdateData = await isUpdateValid(data.user);
             break;
 
         case "password":
-            canUpdateData = await isPasswordUpdateValid(data);
+            canUpdateData = await isPasswordUpdateValid(data.user, data.isAdmin);
             break;
 
         case "avatar":
-            canUpdateData = await isAvatarUpdateValid(data, options.avatarFile)
+            canUpdateData = await isAvatarUpdateValid(data.user, options.avatarFile)
                 .then(response => response)
                 .catch(error => error);
             break;
@@ -50,7 +51,7 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
     }
 
     // send update request
-    const response = await Axios.post("http://localhost:3001/api/post/updateuser",
+    const response = await Axios.post(apiServerIp + "/api/post/updateuser",
         canUpdateData.value,
         { headers: { ...canUpdateData.headers } })
         .then(response => response)
@@ -127,8 +128,6 @@ export const isUpdateValid = (data) => {
         delete updateObject.user_permissions;
     }
 
-    console.log(updateObject)
-
     // check if there is any data to update than the user_id
     if (Object.keys(updateObject).length <= 1) {
         return {
@@ -179,10 +178,8 @@ export const isAvatarUpdateValid = (data, image) => {
             const averageColor = getAverageColor(imgElement, 1);
             formData.append("user_banner_color", `[${averageColor.R},${averageColor.G},${averageColor.B}]`);
 
-            // TODO - check if image is different from current image, not working right now, because of the file name being different all the time
             if (data.user_avatar_file !== image.name) {
                 return resolve({ status: true, value: formData, headers: { "Content-Type": "multipart/form-data" } });
-
             }
 
             // revoke object url if all checks fail
@@ -199,8 +196,8 @@ export const isAvatarUpdateValid = (data, image) => {
 }
 
 // check if password update is valid
-export const isPasswordUpdateValid = (data) => {
-    const user_old_password = document.querySelector("#user-old-password-settings").value.trim();
+export const isPasswordUpdateValid = (data, isAdmin) => {
+    const user_old_password = document.querySelector("#user-old-password-settings");
     const user_new_password = document.querySelector("#user-new-password-settings").value.trim();
     const user_new_password_confirm = document.querySelector("#user-new-password-confirm-settings").value.trim();
 
@@ -214,12 +211,19 @@ export const isPasswordUpdateValid = (data) => {
     updateObject.user_id = data.user_id;
 
     // first check if data is valid
-    if (isPasswordValid(user_old_password).status
-        && isPasswordValid(user_new_password).status
+    if (isPasswordValid(user_new_password).status
         && isPasswordValid(user_new_password_confirm).status
         && user_new_password === user_new_password_confirm) {
         // if all checks pass, add data to object
-        updateObject.user_old_password = user_old_password;
+        if (!isAdmin) {
+            // check if old password is valid
+            if (!isPasswordValid(user_old_password.value.trim()).status) {
+                return { status: false, value: updateObject };
+            }
+
+            updateObject.user_old_password = user_old_password.value.trim();
+        }
+
         updateObject.user_new_password = user_new_password;
         updateObject.user_repeat_new_password = user_new_password_confirm;
     }
@@ -241,7 +245,7 @@ export const deleteAccount = (data, popupContext, navigate) => {
 
     const controller = new AbortController();
 
-    Axios.post("http://localhost:3001/api/post/deleteUser", {
+    Axios.post(apiServerIp + "/api/post/deleteUser", {
         user_id: data.user_id
     }, {
         signal: controller.signal
@@ -250,7 +254,93 @@ export const deleteAccount = (data, popupContext, navigate) => {
         // if delete was successful
         if (response.data && response.data.status) {
             // reload page
-            return response.data.deletedYourself ? navigate("/") : window.location.reload();
+            return response.data.deletedYourself ? navigate("/login") : window.location.reload();
+        }
+
+        // show error popup
+        UpdateCustomPopup(popupContext.active,
+            popupContext.title,
+            [
+                (response.data && response.data.message) || popupContext.message[0],
+                popupContext.message[1]
+            ]
+        );
+    }).catch(error => {
+        if (error.name === "CanceledError") {
+            return;
+        }
+
+        // show error popup
+        UpdateCustomPopup(popupContext.active,
+            popupContext.title,
+            [
+                (error.response && error.response.data && error.response.data.message) || popupContext.message[0],
+                popupContext.message[1]
+            ]
+        );
+    });
+
+    return () => controller.abort();
+}
+
+export const isTransferUpdateValid = (data) => {
+    const user_transfer_to = document.querySelector("#user-id-transfer");
+    const transfer_confirm_input = document.querySelector("#transfer-confirm");
+
+    let updateObject = {};
+
+    // check if user id is valid
+    if (!data.user_id) {
+        return { status: false, value: updateObject };
+    }
+
+    updateObject.user_id = data.user_id;
+
+    // check if transfer confirm input is valid
+    if (transfer_confirm_input && transfer_confirm_input.value === "I want to transfer ownership") {
+        // try to parse user target id
+        try {
+            updateObject.user_transfer_to = parseInt(user_transfer_to.value);
+        } catch (error) {
+            return { status: false, value: updateObject };
+        }
+    }
+
+    // delete user_transfer_to if it is not a number
+    if (isNaN(updateObject.user_transfer_to)) {
+        delete updateObject.user_transfer_to;
+    }
+
+
+    // check if object contains any data other than user_id
+    if (Object.keys(updateObject).length <= 1) {
+        return { status: false, value: updateObject };
+    }
+
+    // otherwise return true
+    return { status: true, value: updateObject };
+}
+
+export const transferOwnership = (data, popupContext) => {
+    // check validity of data
+    const isValid = isTransferUpdateValid(data);
+    if (!isValid.status) {
+        return { status: false, value: {} };
+    }
+
+    const controller = new AbortController();
+
+    Axios.post(apiServerIp + "/api/post/transferOwnership", {
+        user_id: isValid.value.user_id,
+        user_id_transfer: isValid.value.user_transfer_to
+    }, {
+        signal: controller.signal
+    }).then(response => {
+
+        // if transfer was successful
+        if (response.data && response.data.status) {
+            // reload page
+            return window.location.reload();
         }
 
         // show error popup

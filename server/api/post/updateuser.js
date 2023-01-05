@@ -46,7 +46,7 @@ module.exports = function (app, db_connection, upload) {
 
 
         // check if fields are valid
-        if (!user_name && !user_tag && !user_email && (!user_old_password && !user_new_password && !user_repeat_new_password) && !user_avatar_url && !user_permissions && !user_banner_color) {
+        if (!user_name && !user_tag && !user_email && (!user_new_password && !user_repeat_new_password) && !user_avatar_url && !user_permissions && !user_banner_color) {
             return response.send({ status: 0, message: CONFIG.messages.NOTHING_TO_UPDATE });
         }
 
@@ -55,6 +55,17 @@ module.exports = function (app, db_connection, upload) {
             // check promise result and return error message if user is not in database
             if (!result) {
                 return response.send({ status: 0, message: CONFIG.messages.USER_NOT_FOUND });
+            }
+
+            let isAdmin = false;
+
+            // check if user has permissions to edit the user
+            // also check if user is trying to edit himself
+            // or if user is trying to edit another user that has lower permissions
+            if ((request.session.user.user_permissions >= CONFIG.permissions.administrator
+                && request.session.user.user_permissions > result[0][CONFIG.database.users_table_columns.user_permissions])
+                && request.session.user.user_id !== result[0][CONFIG.database.users_table_columns.user_id]) {
+                isAdmin = true;
             }
 
             // check if username is already in use
@@ -89,16 +100,25 @@ module.exports = function (app, db_connection, upload) {
             }
 
             // check if old password is correct
-            if (user_old_password && user_new_password && user_repeat_new_password) {
+            if (user_new_password && user_repeat_new_password) {
                 // compare password hashes
-                const passwordMatch = await utils.comparePasswords(user_old_password, result[0][CONFIG.database.users_table_columns.user_password_hash]).catch((error) => {
-                    console.log(error);
-                });
 
-                // return error message if password is incorrect
-                if (!passwordMatch) {
+                // check if old password is valid if user is not admin
+                if (!isAdmin && !user_old_password) {
                     return response.send({ status: 0, message: CONFIG.messages.INVALID_OLD_PASSWORD });
                 }
+
+                if (!isAdmin) {
+                    const passwordMatch = await utils.comparePasswords(user_old_password, result[0][CONFIG.database.users_table_columns.user_password_hash]).catch((error) => {
+                        console.log(error);
+                    });
+
+                    // return error message if old password is not correct
+                    if (!passwordMatch) {
+                        return response.send({ status: 0, message: CONFIG.messages.INVALID_OLD_PASSWORD });
+                    }
+                }
+
 
                 // check if new password match
                 if (user_new_password !== user_repeat_new_password) {

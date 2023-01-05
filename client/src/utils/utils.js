@@ -1,5 +1,6 @@
 
 import Axios from "axios";
+import { apiServerIp, maxPermissionLevel } from "../components/globalVariables";
 
 export const RGBtoHSV = (r, g, b) => {
     // declare variables for red, green, blue, hue, saturation, value, and difference
@@ -355,7 +356,7 @@ export const isUserLoggedIn = (navigate) => {
     const controller = new AbortController();
 
     // check if user is logged in
-    Axios.get("http://localhost:3001/api/get/userinfo", {
+    Axios.get(apiServerIp + "/api/get/userinfo", {
         signal: controller.signal
     }).then((response) => {
         // check if user is logged in
@@ -377,11 +378,39 @@ export const isUserLoggedIn = (navigate) => {
     return () => controller.abort();
 };
 
+export const checkUserPermissions = (navigate) => {
+    const controller = new AbortController();
+
+    // check if user is logged in
+    Axios.get(apiServerIp + "/api/get/userinfo", {
+        signal: controller.signal
+    }).then((response) => {
+        if (response.data.user.user_permissions >= maxPermissionLevel) {
+            return;
+        }
+
+        return navigate("/404");
+
+    }).catch((err) => {
+        // check if error is abort error
+        if (err.name === "CanceledError") {
+            return;
+        }
+
+        console.log(err);
+    });
+
+    console.log("Axios sent get user permissions request.")
+
+    // cleanup, abort request
+    return () => controller.abort();
+};
+
 export const getUserData = (controller) => {
     return new Promise((resolve, reject) => {
         // check if user is logged in
         // Send request to get user data
-        Axios.get("http://localhost:3001/api/get/userinfo", {
+        Axios.get(apiServerIp + "/api/get/userinfo", {
             signal: controller.signal
         }).then((response) => {
             // return user data
@@ -416,4 +445,68 @@ export const Paginator = (items, page, per_page) => {
         total_pages: total_pages,
         data: paginatedItems
     };
+}
+
+// set theme and toggle if no theme set in local storage based on system theme
+export const setTheme = () => {
+
+    // get theme from local storage
+    const theme = localStorage.getItem("theme");
+
+    // check if theme is set in local storage
+    if (theme) {
+        // set theme
+        document.documentElement.setAttribute("data-theme", theme);
+    }
+    else {
+        // get system theme
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        // set theme to system theme
+        document.documentElement.setAttribute("data-theme", systemTheme);
+    }
+}
+
+// toggle theme
+export const toggleTheme = () => {
+    // get theme from local storage
+    const theme = localStorage.getItem("theme");
+
+    // check if theme is set in local storage
+    if (theme) {
+        // check if theme is dark
+        if (theme === "dark") {
+            // set theme to light
+            document.documentElement.setAttribute("data-theme", "light");
+            localStorage.setItem("theme", "light");
+        }
+        else {
+            // set theme to dark
+            document.documentElement.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+        }
+    }
+    else {
+        // get system theme
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+        // set theme
+        document.documentElement.setAttribute("data-theme", systemTheme);
+        localStorage.setItem("theme", systemTheme);
+    }
+}
+
+export const getTheme = () => {
+    // get theme from local storage
+    const theme = localStorage.getItem("theme");
+
+    // check if theme is set in local storage
+    if (theme) {
+        return theme;
+    }
+    else {
+        // get system theme
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+        return systemTheme;
+    }
 }

@@ -13,6 +13,11 @@ module.exports = function (app, db_connection) {
         const email = request.body.email;
         const password = request.body.password;
 
+        if (!request.session.user || request.session.user.user_permissions < CONFIG.permissions.administrator) {
+            // if user is not logged in or user is not admin, return error message
+            return response.send({ status: 0, message: CONFIG.messages.INVALID_PERMISSIONS });
+        }
+
         // check if fields are valid
         if (!(user_name && email && password)
             || password.length < 8 || password.length > 255

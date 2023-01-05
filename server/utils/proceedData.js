@@ -4,6 +4,8 @@ const CONFIG = require('../config.json');
 // import bcrypt for encryption
 const bcrypt = require('bcrypt');
 
+const fs = require('fs');
+
 // export functions as module
 module.exports = function (db_connection) {
     const users_table_name = CONFIG.database.users_table_name;
@@ -19,23 +21,6 @@ module.exports = function (db_connection) {
             db_connection.query(
                 `SELECT ${config_user_id} FROM ${users_table_name} WHERE ${config_user_id} = ? OR (${config_user_name} = ? AND ${config_user_tag} = ?)`,
                 [user_id, user_name, user_tag],
-                (error, result) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    else {
-                        return resolve(result);
-                    }
-                }
-            );
-        });
-    };
-
-    const emailOrUsernameExists = (user_name, isUsernameEmail = false, selector = config_user_id) => {
-        return new Promise((resolve, reject) => {
-            db_connection.query(
-                `SELECT ${selector} FROM ${users_table_name} WHERE ${isUsernameEmail ? config_user_email : config_user_name} = ?`,
-                [user_name],
                 (error, result) => {
                     if (error) {
                         return reject(error);
@@ -239,10 +224,10 @@ module.exports = function (db_connection) {
         });
     }
 
+
     return {
         // GET / SELECT
         idOrUsernameExists,
-        emailOrUsernameExists,
         fetchById,
         fetchByName,
         fetchByEmail,

@@ -119,6 +119,7 @@ require("./api/post/updateuser")(app, db_connection, upload);
 require("./api/post/userById")(app, db_connection);
 require("./api/post/fetchUserList")(app, db_connection);
 require("./api/post/deleteUser")(app, db_connection);
+require("./api/post/transferOwnership")(app, db_connection);
 
 // GET
 require("./api/get/userinfo")(app);

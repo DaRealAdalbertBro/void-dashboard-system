@@ -1,18 +1,17 @@
 .dashboard-container {
     width: 100%;
-    min-height: 100vh;
     height: auto;
     display: grid;
-    grid-template-columns: 240px 100% auto;
+    grid-template-columns: 240px repeat(auto-fit, minmax(92px, 1fr));
     grid-template-areas: "sidebar header header"
         "sidebar content content";
 
     background-color: var(--default-background);
+    overflow: hidden;
 }
 
 .dashboard-container .dashboard-header {
     grid-area: header;
-    width: calc(100% - 240px);
     height: 56px;
     background-color: var(--gray);
     display: flex;
@@ -28,6 +27,8 @@
     justify-content: flex-end;
     align-items: center;
     gap: 32px;
+    position: absolute;
+    right: 32px;
 }
 
 .dashboard-container .dashboard-header .dashboard-header-buttons>div {
@@ -39,6 +40,7 @@
 
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile {
     color: var(--lighter-text);
+    position: relative;
 }
 
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile .small-profile-info:hover {
@@ -69,6 +71,7 @@
 
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown {
     display: flex;
+    width: auto;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -78,16 +81,32 @@
     top: 56px;
 }
 
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown-item-section {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 8px 0;
+    color: var(--lighter-text);
+    opacity: 0.5;
+    padding: 0 18px;
+    cursor: auto;
+}
+
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     flex-direction: row;
-    gap: 16px;
+    gap: 8px;
     cursor: pointer;
     width: 100%;
     padding: 12px 32px;
-    transition: 0.2s;
+    transition: 0.1s;
     outline: none;
     border: none;
     background-color: transparent;
@@ -95,8 +114,13 @@
 }
 
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item p {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
+}
+
+.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item svg {
+    font-size: 20px;
+    color: var(--lighter-text);
 }
 
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item:first-child {
@@ -118,11 +142,6 @@
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item:hover {
     background-color: var(--gray);
     color: var(--default-text) !important;
-}
-
-.dashboard-container .dashboard-header .dashboard-header-buttons .profile .profile-dropdown .profile-dropdown-item svg {
-    font-size: 18px;
-    color: var(--lighter-text);
 }
 
 .dashboard-container .dashboard-header .dashboard-header-buttons .profile img {
@@ -157,8 +176,9 @@
     align-items: center;
     flex-direction: column;
     user-select: none;
-    z-index: 1000;
+    z-index: 9999;
     position: fixed;
+    overflow: hidden;
 }
 
 .dashboard-container .dashboard-left-bar .dashboard-header-title {
@@ -207,15 +227,18 @@
     opacity: 0.5;
 }
 
-.dashboard-container .dashboard-left-bar .dashboard-left-bar-item {
+.dashboard-container .dashboard-left-bar button.dashboard-left-bar-item {
     background-color: var(--lighter-gray);
     color: var(--lighter-text);
     width: 80%;
+    height: 40px;
     padding: 8px 16px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     cursor: pointer;
+    outline: none;
+    border: none;
     transition: 0.1s;
 }
 
@@ -234,29 +257,27 @@
 }
 
 .dashboard-container .dashboard-left-bar .dashboard-left-bar-item p {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    padding-bottom: 2px;
 }
 
 .dashboard-container .dashboard-left-bar .dashboard-left-bar-item svg {
-    font-size: 24px;
+    font-size: 22px;
     margin-right: 8px;
 }
 
 .dashboard-container .dashboard-left-bar .dashboard-left-bar-item.active {
     background-color: var(--purple);
     color: var(--default-text);
-    cursor:grab;
+    cursor: grab;
 }
 
 .dashboard-content {
     grid-area: content;
-    width: calc(100% - 240px);
-    min-height: calc(100vh - 56px);
     height: auto;
     background-color: var(--default-background);
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: calc(100vh - 56px);
 }
