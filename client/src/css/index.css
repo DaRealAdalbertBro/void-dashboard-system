@@ -25,6 +25,28 @@
   --scrollbar-thumb-color: #5e5a76;
 }
 
+:root[data-theme='light'] {
+  --default-background: #ffffff;
+  --default-text: rgb(230, 230, 230);
+  --lighter-text: #3d3d3dd3;
+  --purple: #845EC2;
+  --purple-hover: #5b3b8e;
+  --gray: #201d25;
+  --lighter-gray: #2c2a33;
+  --border-gray: #5e5a76;
+  --divider-gray: #383341;
+  --lighter-gray: #2c2a33;
+  --lighter-gray-hover: #23232a;
+  --red: #e53e3e;
+  --red-hover: #b91c1c;
+  --blue: #007592;
+  --blue-hover: #009ccb;
+  --green: #2c7a5d;
+  --green-hover: #30a97d;
+  --scrollbar-thumb-color: #5e5a76;
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

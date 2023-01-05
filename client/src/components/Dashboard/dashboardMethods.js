@@ -232,3 +232,18 @@ export const handleLeftSidebarToggle = (leftSidebarOpen, setLeftSidebarOpen) => 
     // set left sidebar open to opposite of current value
     setLeftSidebarOpen(!leftSidebarOpen);
 }
+
+// // function to set a given theme/color-scheme
+// export const setTheme = (themeName) => {
+//     localStorage.setItem('theme', themeName);
+//     document.documentElement.className = themeName;
+// }
+
+// // function to toggle between light and dark theme
+// export const toggleTheme = () => {
+//    if (localStorage.getItem('theme') === 'theme-dark'){
+//        setTheme('theme-light');
+//    } else {
+//        setTheme('theme-dark');
+//    }
+// }

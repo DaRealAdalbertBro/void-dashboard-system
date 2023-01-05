@@ -52,7 +52,7 @@
 
 .login-container .login-box .login-input svg {
   margin: 0 10px;
-  color: #657575;
+  color: var(--lighter-text);
   font-size: 20px;
 }
 
@@ -64,7 +64,7 @@
   padding: 10px;
   width: 100%;
   display: flex;
-  color: #dadadad3;
+  color: var(--default-text);
   font-weight: 400;
 }
 
@@ -81,11 +81,11 @@
 .login-container .login-box .login-input .username-alert-icon svg,
 .login-container .login-box .login-input .email-alert-icon svg,
 .login-container .login-box .login-input .password-alert-icon svg {
-  color: #E76107;
+  color: var(--red);
 }
 
 .login-container .login-box .login-error {
-  color: #E76107;
+  color: var(--red);
   font-size: 0.8rem;
   display: flex;
   width: 90%;

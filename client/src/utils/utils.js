@@ -446,3 +446,67 @@ export const Paginator = (items, page, per_page) => {
         data: paginatedItems
     };
 }
+
+// set theme and toggle if no theme set in local storage based on system theme
+export const setTheme = () => {
+
+    // get theme from local storage
+    const theme = localStorage.getItem("theme");
+
+    // check if theme is set in local storage
+    if (theme) {
+        // set theme
+        document.documentElement.setAttribute("data-theme", theme);
+    }
+    else {
+        // get system theme
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        // set theme to system theme
+        document.documentElement.setAttribute("data-theme", systemTheme);
+    }
+}
+
+// toggle theme
+export const toggleTheme = () => {
+    // get theme from local storage
+    const theme = localStorage.getItem("theme");
+
+    // check if theme is set in local storage
+    if (theme) {
+        // check if theme is dark
+        if (theme === "dark") {
+            // set theme to light
+            document.documentElement.setAttribute("data-theme", "light");
+            localStorage.setItem("theme", "light");
+        }
+        else {
+            // set theme to dark
+            document.documentElement.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+        }
+    }
+    else {
+        // get system theme
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+        // set theme
+        document.documentElement.setAttribute("data-theme", systemTheme);
+        localStorage.setItem("theme", systemTheme);
+    }
+}
+
+export const getTheme = () => {
+    // get theme from local storage
+    const theme = localStorage.getItem("theme");
+
+    // check if theme is set in local storage
+    if (theme) {
+        return theme;
+    }
+    else {
+        // get system theme
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+        return systemTheme;
+    }
+}

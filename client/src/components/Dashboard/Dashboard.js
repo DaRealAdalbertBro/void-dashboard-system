@@ -12,11 +12,13 @@ import { MdArrowDropDown, MdOutlineBugReport } from "react-icons/md";
 // import dashboard methods
 import { defaultProfilePicture, maxPermissionLevel } from '../globalVariables';
 import { handleNavigationClick, handleProfileDropdown, handleProfileDropdownItemClick, handleClickOutsideProfileDropdown, handleLogout, handleLeftSidebarToggle } from './dashboardMethods';
-import { getUserData } from '../../utils/utils';
+import { getTheme, getUserData, toggleTheme } from '../../utils/utils';
+
+import { HiOutlineLightBulb, HiOutlineMoon } from 'react-icons/hi';
 
 // import dashboard css
 import './Dashboard.css';
-import { AiFillGithub, AiTwotoneCalendar } from 'react-icons/ai';
+import { AiFillGithub } from 'react-icons/ai';
 
 const Dashboard = ({ componentToShow }) => {
     const navigate = useNavigate();
@@ -91,6 +93,7 @@ const Dashboard = ({ componentToShow }) => {
 const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) => {
     const navigate = useNavigate();
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState(null);
 
     // handle profile dropdown click
     useEffect(() => {
@@ -101,10 +104,10 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
 
         document.onmousedown = (e) => handleClickOutsideProfileDropdown(e, setProfileDropdownOpen, profileDropdownOpen);
 
+        setCurrentTheme(getTheme());
+
         // remove event listener when component unmounts
-        return () => {
-            document.onmousedown = null;
-        }
+        return () => document.onmousedown = null;
 
     }, [profileDropdownOpen]);
 
@@ -149,6 +152,17 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
 
                             <div className="profile-dropdown-divider" />
 
+                            <div className='profile-dropdown-item-section'>Themes</div>
+
+                            <button className='profile-dropdown-item' onClick={() => {
+                                toggleTheme();
+
+                                setProfileDropdownOpen(false);
+                            }}>
+                                {currentTheme === "light" ? <HiOutlineLightBulb /> : <HiOutlineMoon />}
+                                <p style={{textTransform: "capitalize"}}>{currentTheme} mode</p>
+                            </button>
+
                             <button className='profile-dropdown-item' onClick={() => handleLogout(navigate)}>
                                 <BsBoxArrowLeft />
                                 <p>Sign Out</p>
@@ -175,7 +189,7 @@ const LeftSideBar = ({ permissionLevel }) => {
 
     // detect window resize
     useLayoutEffect(() => {
-        function onUpdateSize () {
+        function onUpdateSize() {
             // get width
             const width = window.innerWidth;
             if ((leftSidebarOpen && width < 768 && width > 700) || (!leftSidebarOpen && width > 768 && width < 836)) {
@@ -207,12 +221,6 @@ const LeftSideBar = ({ permissionLevel }) => {
                 <FaHome />
                 <p>Home</p>
             </button>
-
-            <button className='dashboard-left-bar-item' id="Calendar" onClick={() => handleNavigationClick("Calendar", navigate)}>
-                <AiTwotoneCalendar />
-                <p>Calendar</p>
-            </button>
-
 
             {
                 permissionLevel >= maxPermissionLevel &&
