@@ -88,7 +88,6 @@ module.exports = function (db_connection) {
                         reject(error);
                     }
                     else {
-                        console.log(result)
                         resolve(result);
                     }
                 }

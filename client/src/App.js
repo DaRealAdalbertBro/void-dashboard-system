@@ -11,14 +11,14 @@ import UserManagement from './components/UserManagement/UserManagement';
 // set Axios defaults
 import Axios from 'axios';
 import { useEffect } from 'react';
-import { toggleTheme } from './utils/utils';
+import { setTheme } from './utils/utils';
 Axios.defaults.withCredentials = true;
 
 function App() {
 
   useEffect(() => {
     // Immediately invoked function to set the theme on initial load
-    toggleTheme();
+    setTheme();
 
   }, []);
 

@@ -26,23 +26,17 @@ const Dashboard = ({ componentToShow }) => {
     const [email, setEmail] = useState("");
     const [permissionLevel, setPermissionLevel] = useState(0);
     const [profilePicture, setProfilePicture] = useState("");
-    const [pageLoading, setPageLoading] = useState(true);
 
     // get user info from server
     useEffect(() => {
-        // define abort controller
-        const controller = new AbortController();
-
         // get user info from server
-        getUserData(controller).then((response) => {
+        getUserData().then((response) => {
             // if user is logged in, set user info
-            if (response.status) {
+            if (response.data.status) {
                 setUsername(response.data.user.user_name);
                 setEmail(response.data.user.user_email);
                 setPermissionLevel(response.data.user.user_permissions);
                 setProfilePicture(response.data.user.user_avatar_url || defaultProfilePicture);
-
-                setPageLoading(false);
                 return;
             }
 
@@ -52,9 +46,6 @@ const Dashboard = ({ componentToShow }) => {
 
         // set document title
         document.title = 'Dashboard | Void';
-
-        // cleanup, abort fetch request
-        return () => controller.abort();
     }, [navigate]);
 
     // handle left sidebar click
@@ -73,14 +64,14 @@ const Dashboard = ({ componentToShow }) => {
                 componentRef.classList.remove('active');
             }
         }
-    }, [componentToShow, pageLoading]);
+    }, [componentToShow]);
 
     return (
         <div className="dashboard-container">
 
             <LeftSideBar permissionLevel={permissionLevel} />
 
-            <TopNavigationBar username={username} email={email} profilePicture={profilePicture} permissionLevel={permissionLevel} />
+            <TopNavigationBar username={username} profilePicture={profilePicture} />
 
             <div className='dashboard-content'>
                 {componentToShow}
@@ -90,7 +81,7 @@ const Dashboard = ({ componentToShow }) => {
     );
 };
 
-const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) => {
+const TopNavigationBar = ({ username, profilePicture }) => {
     const navigate = useNavigate();
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const [currentTheme, setCurrentTheme] = useState(null);
@@ -160,7 +151,7 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
                                 setProfileDropdownOpen(false);
                             }}>
                                 {currentTheme === "light" ? <HiOutlineLightBulb /> : <HiOutlineMoon />}
-                                <p style={{textTransform: "capitalize"}}>{currentTheme} mode</p>
+                                <p style={{ textTransform: "capitalize" }}>{currentTheme} mode</p>
                             </button>
 
                             <div className="profile-dropdown-divider" />
@@ -187,25 +178,41 @@ const TopNavigationBar = ({ username, email, profilePicture, permissionLevel }) 
 const LeftSideBar = ({ permissionLevel }) => {
     const navigate = useNavigate();
 
-    const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
+    const [leftSidebarOpen, setLeftSidebarOpen] = useState(false);
 
     // detect window resize
     useLayoutEffect(() => {
         function onUpdateSize() {
             // get width
             const width = window.innerWidth;
-            if ((leftSidebarOpen && width < 768 && width > 700) || (!leftSidebarOpen && width > 768 && width < 836)) {
+            // check if left sidebar is open and if width is smaller than 768px
+            if (leftSidebarOpen && width < 768) {
                 handleLeftSidebarToggle(leftSidebarOpen, setLeftSidebarOpen);
+                localStorage.setItem("leftSidebarOpen", !leftSidebarOpen);
             }
         }
-
         // add event listener
         window.addEventListener('resize', onUpdateSize);
-        onUpdateSize();
 
         // remove event listener when component unmounts
-        return () => window.removeEventListener('resize', onUpdateSize);
+        return () => {
+            window.removeEventListener('resize', onUpdateSize);
+            document.onload = null;
+        }
     }, [leftSidebarOpen]);
+
+    // handle left sidebar toggle on load
+    useEffect(() => {
+        if (permissionLevel === null) {
+            return;
+        }
+
+        // get value from local storage
+        const isSidebarSetToOpen = localStorage.getItem('leftSidebarOpen') === "true";
+
+        // handle left sidebar toggle on load
+        handleLeftSidebarToggle(!isSidebarSetToOpen, setLeftSidebarOpen, false);
+    }, [permissionLevel]);
 
     return (
         <div className='dashboard-left-bar'>
@@ -215,7 +222,7 @@ const LeftSideBar = ({ permissionLevel }) => {
             </div>
 
             <div className='dashboard-left-bar-item-section'>
-                <h2>Navigation</h2>
+                <h2 data-text="navigation">Navigation</h2>
             </div>
 
             {/* BAR ITEMS / SECTIONS */}
@@ -227,8 +234,7 @@ const LeftSideBar = ({ permissionLevel }) => {
             {
                 permissionLevel >= maxPermissionLevel &&
                 <div className='dashboard-left-bar-item-section'>
-                    <h2>Administration</h2>
-
+                    <h2 data-text="administration">Administration</h2>
                 </div>
             }
 

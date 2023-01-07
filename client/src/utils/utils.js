@@ -406,8 +406,9 @@ export const checkUserPermissions = (navigate) => {
     return () => controller.abort();
 };
 
-export const getUserData = (controller) => {
+export const getUserData = () => {
     return new Promise((resolve, reject) => {
+        const controller = new AbortController();
         // check if user is logged in
         // Send request to get user data
         Axios.get(apiServerIp + "/api/get/userinfo", {
@@ -450,20 +451,14 @@ export const Paginator = (items, page, per_page) => {
 // set theme and toggle if no theme set in local storage based on system theme
 export const setTheme = () => {
 
-    // get theme from local storage
-    const theme = localStorage.getItem("theme");
+    // get the theme
+    const theme = getTheme();
 
-    // check if theme is set in local storage
-    if (theme) {
-        // set theme
-        document.documentElement.setAttribute("data-theme", theme);
-    }
-    else {
-        // get system theme
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        // set theme to system theme
-        document.documentElement.setAttribute("data-theme", systemTheme);
-    }
+    // set theme
+    document.documentElement.setAttribute("data-theme", theme);
+
+    // set theme in local storage
+    localStorage.setItem("theme", theme);
 }
 
 // toggle theme
