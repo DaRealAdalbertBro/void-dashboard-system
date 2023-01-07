@@ -197,7 +197,6 @@ const LeftSideBar = ({ permissionLevel }) => {
         // remove event listener when component unmounts
         return () => {
             window.removeEventListener('resize', onUpdateSize);
-            document.onload = null;
         }
     }, [leftSidebarOpen]);
 
