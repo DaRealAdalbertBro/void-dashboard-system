@@ -155,8 +155,6 @@ app.use((req, res, next) => {
 app.use(function (err, req, res, next) {
     if (!err.statusCode) err.statusCode = 500;
 
-    console.log(err.message);
-
     if (err) {
         return res.status(err.statusCode).send({ ok: false });
     }

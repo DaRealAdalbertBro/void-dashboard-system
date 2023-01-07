@@ -498,7 +498,7 @@ const DeleteAccountSettings = ({ data, popupContext }) => {
                 ) : <p className="account-delete-warning">This action is irreversible. If you continue, all your data will be deleted.</p>}
 
                 <div className="user-info" style={data.user.user_permissions > maxPermissionLevel ? { opacity: 0.4, pointerEvents: "none", userSelect: "none" } : {}}>
-                    <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)", userSelect: "none" }}>I want to delete this account</span>" below to confirm:</h3>
+                    <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green)", userSelect: "none" }}>I want to delete this account</span>" below to confirm:</h3>
 
                     <div className="data-wrapper">
                         <input autoComplete="new-password" type="text" onChange={(e) => {
@@ -535,7 +535,7 @@ const DeleteAccountSettings = ({ data, popupContext }) => {
                             }} />
                         </div>
 
-                        <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green-hover)", userSelect: "none" }}>I want to transfer ownership</span>" below to confirm:</h3>
+                        <h3>Type "<span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--green)", userSelect: "none" }}>I want to transfer ownership</span>" below to confirm:</h3>
 
                         <div className="data-wrapper">
                             <input autoComplete="new-password" type="text" id="transfer-confirm" onChange={(e) => {
