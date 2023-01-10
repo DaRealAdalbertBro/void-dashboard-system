@@ -37,7 +37,7 @@ const UserManagement = () => {
         }).then(response => {
             setIsPending(false)
             // check response status
-            if (response.data.status) {
+            if (response.data && response.data.status) {
                 // if there was no error, set the user list data
                 setUserList(response.data.data);
 

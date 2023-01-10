@@ -32,7 +32,7 @@ const Dashboard = ({ componentToShow }) => {
         // get user info from server
         getUserData().then((response) => {
             // if user is logged in, set user info
-            if (response.data.status) {
+            if (response.data && response.data.status) {
                 setUsername(response.data.user.user_name);
                 setEmail(response.data.user.user_email);
                 setPermissionLevel(response.data.user.user_permissions);

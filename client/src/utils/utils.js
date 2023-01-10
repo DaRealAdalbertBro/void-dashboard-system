@@ -360,7 +360,7 @@ export const isUserLoggedIn = (navigate) => {
         signal: controller.signal
     }).then((response) => {
         // check if user is logged in
-        if (response.data.status && response.data.user) {
+        if (response.data && response.data.status && response.data.user) {
             return navigate()
         }
     }).catch((err) => {
@@ -415,7 +415,7 @@ export const getUserData = () => {
             signal: controller.signal
         }).then((response) => {
             // return user data
-            return resolve({ status: response.data.status, data: response.data });
+            return resolve({ status: response.data && response.data.status, data: response.data });
         }).catch((err) => {
             // check if error is abort error
             if (err.name === "CanceledError") {

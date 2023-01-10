@@ -80,7 +80,7 @@ export const handleLogout = (navigate) => {
         signal: controller.signal,
     }).then((response) => {
         // if operation was successful, navigate to login page
-        if (response.data.status) {
+        if (response.data && response.data.status) {
             return navigate('/login');
         }
     }).catch((err) => {

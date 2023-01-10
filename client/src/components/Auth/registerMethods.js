@@ -30,7 +30,7 @@ export const register = (username, email, password, navigate) => {
                 }
             }).then((response) => {
                 // If the registration was successful, redirect to the dashboard
-                if (response.data.status) {
+                if (response.data && response.data.status) {
                     resolve({ status: true, message: response.data.message })
                     return navigate('/dashboard');
                 }

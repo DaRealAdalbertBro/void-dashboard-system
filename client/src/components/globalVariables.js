@@ -33,4 +33,4 @@ export const NotFoundGif = [
     }
 ]
 
-export const apiServerIp = "http://localhost:3001";
+export const apiServerIp = "http://localhost:9001";

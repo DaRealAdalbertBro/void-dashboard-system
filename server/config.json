@@ -51,7 +51,8 @@
         "DEFAULT_PARAMETER_LIMIT": 1000,
         "DEFAULT_CORS_ORIGIN": [
             "http://localhost:3000"
-        ]
+        ],
+        "DEFAULT_ALLOW_SPECIAL_CHARACTERS": true
     },
     "session": {
         "session_key": "SESSION_ID",
@@ -60,7 +61,8 @@
         "cookies": {
             "secure": false,
             "expires": 345600000,
-            "sameSite": "lax"
+            "sameSite": "lax",
+            "httpOnly": true
         }
     }
 }

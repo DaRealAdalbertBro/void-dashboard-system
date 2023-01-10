@@ -1,10 +1,12 @@
-// import generateID
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const path = require('path');
 
-// import dotenv
-require('dotenv').config();
+// import .env
+require('dotenv').config({
+    path: path.resolve(__dirname, './.env')
+});
 
 // import body-parser and cookie-parser for session
 const bodyParser = require('body-parser');
@@ -13,8 +15,7 @@ const session = require('express-session');
 
 // create express app
 const app = express();
-const CDN_DIR = 'public/uploads/';
-
+const PORT = process.env.SERVER_PORT || 9001;
 const CONFIG = require('./config.json');
 
 app.use(express.json());
@@ -42,8 +43,8 @@ app.use(bodyParser.urlencoded({
     parameterLimit: 1000000
 }));
 
-// express static means that the files in the folder are accessible from the browser
-app.use('/public', express.static('public'));
+// set up static files
+app.use('/cdn', express.static(path.join('cdn')));
 
 console.log("Setting up session...");
 
@@ -61,7 +62,8 @@ app.use(session({
     cookie: {
         maxAge: CONFIG.session.cookies.expires,
         secure: CONFIG.session.cookies.secure,  // set to true if your using https
-        sameSite: CONFIG.session.cookies.sameSite
+        sameSite: CONFIG.session.cookies.sameSite,
+        httpOnly: CONFIG.session.cookies.httpOnly
     },
 }));
 
@@ -89,7 +91,7 @@ const multer = require('multer');
 // set up storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, CDN_DIR);
+        cb(null, path.join(__dirname, '/cdn/uploads/'));
     },
     filename: (req, file, cb) => {
         const fileName = file.originalname.toLowerCase().split(' ').join('-');
@@ -126,8 +128,8 @@ require("./api/get/userinfo")(app);
 
 
 // create server on port 3001 or port specified in .env file
-app.listen(process.env.SERVER_PORT || 3001, () => {
-    console.log('SERVER HAS STARTED');
+app.listen(PORT, () => {
+    console.log('SERVER HAS STARTED ON PORT ' + PORT);
     console.log("-----------------------------------")
 });
 
@@ -139,7 +141,7 @@ app.use((req, res, next) => {
         const error = new Error();
 
         // if the url contains '/public/' then it is a 410 error
-        if (req.originalUrl.includes('/public/')) {
+        if (req.originalUrl.includes('/cdn/')) {
             error.message = 'This file has been deleted or does not exist.';
             error.statusCode = 410;
         }
@@ -154,6 +156,8 @@ app.use((req, res, next) => {
 
 app.use(function (err, req, res, next) {
     if (!err.statusCode) err.statusCode = 500;
+
+    console.log(err.message);
 
     if (err) {
         return res.status(err.statusCode).send({ ok: false });
