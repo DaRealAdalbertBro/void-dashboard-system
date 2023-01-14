@@ -1,10 +1,5 @@
-// import database config from config file
 const CONFIG = require('../config.json');
-
-// import bcrypt for encryption
 const bcrypt = require('bcrypt');
-
-const fs = require('fs');
 
 // export functions as module
 module.exports = function (db_connection) {

@@ -64,7 +64,7 @@ const Profile = () => {
         }, {
             signal: controller.signal
         }).then((response) => {
-            if (response.data.status) {
+            if (response.data && response.data.status) {
                 return setData(response.data);
             }
 
@@ -120,7 +120,7 @@ const Profile = () => {
                     signal: controller.signal
                 }).then((response) => {
                     // if update was successful
-                    if (response.data.status) {
+                    if (response.data && response.data.status) {
                         // update data with new user info
                         setData(response.data);
                     }
@@ -445,7 +445,7 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
                         </div>
                     </div>
 
-                    <p className="description">The maximum file size is 8 MB, almost all image and gif formats are allowed.</p>
+                    <p className="description">The maximum file size is 8 MB - GIF, JPEG, TIFF, PNG, WEBP and MBP formats are allowed.</p>
 
                     <div className="submit-wrapper">
                         <button className="settings-submit-button" disabled={!canSaveAvatar} onClick={() => {
