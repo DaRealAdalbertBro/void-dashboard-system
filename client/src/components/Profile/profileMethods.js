@@ -4,6 +4,7 @@ import Axios from "axios";
 import { isUsernameValid, isTagValid, isEmailValid, isFileValid, isPasswordValid, isPermissionLevelValid } from "../../utils/validateInput";
 import { getAverageColor } from "../../utils/utils";
 import { UpdateCustomPopup } from "../CustomPopup";
+import { defaultBannerColor, defaultProfilePicture } from "../globalVariables";
 
 /////////////////////////////////////////////
 // * VALID OPTIONS: *
@@ -35,6 +36,9 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
                 .then(response => response)
                 .catch(error => error);
             break;
+        case "resetAvatar":
+            canUpdateData = await resetAvatar(data);
+            break;
 
         default:
             break;
@@ -49,10 +53,12 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
         return false;
     }
 
+    const controller = new AbortController();
+
     // send update request
     const response = await Axios.post("http://localhost:3001/api/post/updateuser",
         canUpdateData.value,
-        { headers: { ...canUpdateData.headers } })
+        { headers: { ...canUpdateData.headers }, signal: controller.signal })
         .then(response => response)
         .catch(err => err);
 
@@ -70,6 +76,8 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
             popupContext.message[1]
         ]
     );
+
+    return () => controller.abort();
 }
 
 // check if user update is valid
@@ -273,4 +281,29 @@ export const deleteAccount = (data, popupContext, navigate) => {
     });
 
     return () => controller.abort();
+}
+
+export const resetAvatar = (data) => {
+    // create form data
+    const formData = new FormData();
+
+    // check if user id is valid
+    if (!data.user_id) {
+        return {
+            status: false,
+            value: {}
+        };
+    }
+
+    // append user id to form data
+    formData.append("user_id", data.user_id);
+
+    // append url of default avatar to form data
+    formData.append("user_avatar_url", defaultProfilePicture);
+
+    // append default banner setting to form data
+    formData.append("user_banner_color", defaultBannerColor);
+
+    // unless any errors were found prior, return true
+    return { status: true, value: formData }
 }

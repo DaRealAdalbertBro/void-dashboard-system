@@ -1,5 +1,6 @@
 
 export const defaultProfilePicture = "/assets/images/avatars/default.webp"
+export const defaultBannerColor = "[19,113,147]";
 export const allowSpecialCharactersInUsername = false;
 export const maxPermissionLevel = 2;
 export const NotFoundGif = [

@@ -1,4 +1,6 @@
 const { snowflakeIdCreatedAt } = require('../../utils/generateID.js');
+const fs = require('fs')
+const path = require('path')
 
 module.exports = function (app, db_connection, upload) {
     const utils = require('../../utils/proceedData.js')(db_connection);
@@ -35,8 +37,9 @@ module.exports = function (app, db_connection, upload) {
         }
 
         if (request.file) {
-            const url = request.protocol + '://' + request.get('host')
-            const profileImg = url + '/public/uploads/' + request.file.filename
+            const url = request.protocol + '://' + request.get('host');
+            const profileImg = url + '/public/uploads/' + request.file.filename   
+
             if (!user_avatar_url) {
                 user_avatar_url = profileImg;
             }
@@ -120,15 +123,13 @@ module.exports = function (app, db_connection, upload) {
             }
 
             // check if avatar url is valid
-            // check if avatar url is not the same as the current one
-            if (user_avatar_url && user_avatar_url !== CONFIG.defaults.DEFAULT_AVATAR_URL
-                && user_avatar_url !== result[0][CONFIG.database.users_table_columns.user_avatar_url]) {
+            if (user_avatar_url) {
                 updateObject.user_avatar_url = user_avatar_url;
             }
 
             // check if banner color is valid
             // check if banner color is not the same as the current one
-            if (user_banner_color && user_banner_color !== CONFIG.defaults.DEFAULT_BANNER_COLOR) {
+            if (user_banner_color) {
                 updateObject.user_banner_color = user_banner_color;
             }
 
@@ -147,6 +148,15 @@ module.exports = function (app, db_connection, upload) {
                 }
 
                 updateObject.user_permissions = user_permissions;
+            }
+
+            // if there's an avatar url
+            if(user_avatar_url && user_avatar_url === CONFIG.defaults.DEFAULT_CLIENT_AVATAR_URL && user_avatar_url !== result[0[CONFIG.database.users_table_columns.user_avatar_url]]){
+                fs.unlink(path.join(__dirname, '..', '..', result[0][CONFIG.database.users_table_columns.user_avatar_url].replace("http://localhost:3001","")), (err) => {
+                    if(err){
+                        console.log(err)
+                    }
+                })
             }
 
             // update user data

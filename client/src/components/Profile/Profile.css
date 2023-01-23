@@ -26,6 +26,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    user-select: none;
 }
 
 .profile-container .profile .profile-picture img {
@@ -83,6 +84,7 @@
     box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 32px 4px;
     transition: 0.1s;
     cursor: grab;
+    user-select: none;
 }
 
 .profile-container .profile-bio:hover {

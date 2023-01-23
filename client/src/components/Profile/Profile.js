@@ -38,6 +38,8 @@ const Profile = () => {
     const [canSaveAvatar, setCanSaveAvatar] = useState(false);
     const [canBeDeleted, setCanBeDeleted] = useState(false);
 
+    const [restored, setRestored] = useState(false);
+
     // store avatar file for later use
     const [avatarFile, setAvatarFile] = useState(null);
 
@@ -162,7 +164,7 @@ const Profile = () => {
                                         </div>
 
                                         <div className="settings-wrapper">
-                                            <AvatarSettings data={data} popupContext={popupContext} canSaveAvatar={canSaveAvatar} setCanSaveAvatar={setCanSaveAvatar} avatarFile={avatarFile} setAvatarFile={setAvatarFile} />
+                                            <AvatarSettings data={data} popupContext={popupContext} canSaveAvatar={canSaveAvatar} setCanSaveAvatar={setCanSaveAvatar} avatarFile={avatarFile} setAvatarFile={setAvatarFile} restored={restored} setRestored={setRestored} />
 
                                             <DeleteAccountSettings data={data} popupContext={popupContext} canBeDeleted={canBeDeleted} setCanBeDeleted={setCanBeDeleted} />
                                         </div>
@@ -397,7 +399,7 @@ const UserSettings = ({ data, popupContext, canSaveSettings, setCanSaveSettings,
     );
 };
 
-const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, avatarFile, setAvatarFile }) => {
+const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, avatarFile, setAvatarFile, restored, setRestored }) => {
     return (
         <div className="box" id="avatar">
             <div className="box-header">
@@ -408,7 +410,7 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
 
                         <div className="avatar-upload">
                             <label htmlFor="avatar-upload">
-                                <input type="file" id="avatar-upload" onChange={e => {
+                                <input type="file" id="avatar-upload" accept="image/*" onChange={e => {
                                     // check if file is valid
                                     if (isFileValid(e.currentTarget.files[0]).status) {
                                         // allow save button
@@ -416,6 +418,9 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
 
                                         // revoke old file
                                         URL.revokeObjectURL(avatarFile);
+
+                                        // in case the user used restore button before, reset it's state to false
+                                        setRestored(false)
 
                                         // set new file
                                         setAvatarFile(e.currentTarget.files[0]);
@@ -448,12 +453,24 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
 
                     <div className="submit-wrapper">
                         <button className="settings-submit-button" disabled={!canSaveAvatar} onClick={() => {
-                            submitSettings(data.user, {
-                                type: "avatar",
-                                avatarFile: avatarFile,
-                                canSave: [canSaveAvatar, setCanSaveAvatar],
-                                popupContext
-                            })
+                            // unless the avatar was restored, upload the new avatar
+                            if(restored){
+                                submitSettings(data.user, {
+                                    type: "resetAvatar",
+                                    canSave: [canSaveAvatar, setCanSaveAvatar],
+                                    popupContext
+                                })
+                            }else {
+                                submitSettings(data.user, {
+                                    type: "avatar",
+                                    avatarFile: avatarFile,
+                                    canSave: [canSaveAvatar, setCanSaveAvatar],
+                                    popupContext
+                                });
+                            }
+
+                            // disable save button
+                            setCanSaveAvatar(false);                                               
                         }}>
                             <p>Save</p>
                         </button>
@@ -465,10 +482,16 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
                                 .then(response => response.blob())
                                 .then(blob => blob && new File([blob], "default.webp", { type: "image/webp" }));
 
-                            // // set preview
+                            // revoke previous file
+                            URL.revokeObjectURL(avatarFile);
+
+                            // set preview
                             setAvatarFile(newAvatarUrl);
 
-                            // disable save button
+                            // set the boolean for resetting the avatar to true
+                            setRestored(true)
+
+                            // enable save button
                             setCanSaveAvatar(true);
                         }}>
                             <p>Restore</p>
