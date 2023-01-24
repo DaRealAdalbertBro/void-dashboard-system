@@ -217,8 +217,8 @@ module.exports = function (app, db_connection, upload) {
             && user_avatar_url.value === CONFIG.defaults.DEFAULT_CLIENT_AVATAR_URL
             && user_avatar_url.value !== result[0][CONFIG.database.users_table_columns.user_avatar_url]){
                 const domainUrl = request.protocol + '://' + request.get('host') + ":" + process.env.SERVER_PORT;
-            fs.unlink(path.join(__dirname, '..', '..', result[0][CONFIG.database.users_table_columns.user_avatar_url].replace("http://localhost:3001","")), (err) => {
-                if(err){
+            fs.unlink(path.join(__dirname, '..', '..', result[0][CONFIG.database.users_table_columns.user_avatar_url].replace(domainUrl,"")), (err) => {
+                if(err && err.code !== 'ENOENT'){
                     console.log(err)
                 }
             })
