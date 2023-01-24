@@ -1,11 +1,11 @@
 ## CREATE THE DB
 
 ```
-CREATE DATABASE IF NOT EXISTS `loginSystem` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `voidDashboard` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 
 ```
-USE `loginSystem`;
+USE `voidDashboard`;
 ```
 
 ## CREATE THE users TABLE
