@@ -456,13 +456,13 @@ const AvatarSettings = ({ data, popupContext, canSaveAvatar, setCanSaveAvatar, a
                         <button className="settings-submit-button" disabled={!canSaveAvatar} onClick={() => {
                             // unless the avatar was restored, upload the new avatar
                             if(restored){
-                                submitSettings(data.user, {
+                                submitSettings(data, {
                                     type: "resetAvatar",
                                     canSave: [canSaveAvatar, setCanSaveAvatar],
                                     popupContext
                                 })
                             }else {
-                                submitSettings(data.user, {
+                                submitSettings(data, {
                                     type: "avatar",
                                     avatarFile: avatarFile,
                                     canSave: [canSaveAvatar, setCanSaveAvatar],

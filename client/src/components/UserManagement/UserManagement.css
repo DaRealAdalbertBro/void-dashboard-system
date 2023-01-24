@@ -107,8 +107,8 @@
 }
 
 #user-management .box .avatar img {
-    width: 100%;
-    height: auto;
+    width: 92px;
+    height: 92px;
     -webkit-user-drag: none;
     -khtml-user-drag: none;
     -moz-user-drag: none;
