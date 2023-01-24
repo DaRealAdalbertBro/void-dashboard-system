@@ -1,4 +1,11 @@
 const { snowflakeIdCreatedAt } = require('../../utils/generateID.js');
+const fs = require('fs')
+const path = require('path')
+
+// import .env
+require('dotenv').config({
+    path: path.resolve(__dirname, './.env')
+});
 
 module.exports = function (app, db_connection, upload) {
     const utils = require('../../utils/proceedData.js')(db_connection);
@@ -148,17 +155,17 @@ module.exports = function (app, db_connection, upload) {
             updateObject.user_password_hash = hashedNewPassword;
         }
 
+        
+
         // check if avatar url is valid
         // and is not the same as the current one
-        if (user_avatar_url.status
-            && user_avatar_url.value !== CONFIG.defaults.DEFAULT_AVATAR_URL
-            && user_avatar_url.value !== result[0][CONFIG.database.users_table_columns.user_avatar_url]) {
+        if (user_avatar_url.status) {
             updateObject.user_avatar_url = user_avatar_url.value;
         }
 
         // check if banner color is valid
         // check if banner color is not the same as the current one
-        if (user_banner_color.status && user_banner_color.value !== CONFIG.defaults.DEFAULT_BANNER_COLOR) {
+        if (user_banner_color.status) {
             updateObject.user_banner_color = user_banner_color.value;
         }
 
@@ -202,6 +209,19 @@ module.exports = function (app, db_connection, upload) {
 
             // return success message
             return response.send({ status: 1, message: CONFIG.messages.USER_UPDATED, user: userObject });
+        }
+
+        
+        // if there's an avatar url
+        if(user_avatar_url.status
+            && user_avatar_url.value === CONFIG.defaults.DEFAULT_CLIENT_AVATAR_URL
+            && user_avatar_url.value !== result[0][CONFIG.database.users_table_columns.user_avatar_url]){
+                const domainUrl = request.protocol + '://' + request.get('host') + ":" + process.env.SERVER_PORT;
+            fs.unlink(path.join(__dirname, '..', '..', result[0][CONFIG.database.users_table_columns.user_avatar_url].replace("http://localhost:3001","")), (err) => {
+                if(err){
+                    console.log(err)
+                }
+            })
         }
 
     });

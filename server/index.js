@@ -13,6 +13,9 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
+// import fs from node.js packages
+const fs = require('fs')
+
 // create express app
 const app = express();
 const PORT = process.env.SERVER_PORT || 9001;
@@ -94,8 +97,8 @@ const storage = multer.diskStorage({
         cb(null, path.join(__dirname, '/cdn/uploads/'));
     },
     filename: (req, file, cb) => {
-        const fileName = file.originalname.toLowerCase().split(' ').join('-');
-        cb(null, uuid() + '-' + fileName)
+        const fileName = file.originalname.toLowerCase();
+        cb(null, req.body.user_id + "." + fileName.split('.').pop())
     }
 });
 
@@ -105,6 +108,12 @@ const upload = multer({
     limits: { fileSize: CONFIG.defaults.DEFAULT_MAX_FILE_SIZE[1] },
     fileFilter: (req, file, cb) => {
         if (file.mimetype.includes('image') || file.mimetype.includes('gif')) {
+            fs.unlink(CDN_DIR + req.session.user.user_avatar_url.split("/").pop(), (err) => {
+                if(err && !err.code === "ENOENT"){
+                    cb(null, false)
+                    return cb(err)
+                }
+            })
             cb(null, true);
         } else {
             cb(null, false);

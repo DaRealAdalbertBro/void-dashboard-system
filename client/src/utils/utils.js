@@ -1,4 +1,3 @@
-
 import Axios from "axios";
 import { apiServerIp, maxPermissionLevel } from "../components/globalVariables";
 
@@ -89,7 +88,9 @@ const HSVtoRGB = (hue, saturation, value) => {
     x += m;
 
     // Declare variables for red, green, blue
-    let R = 0, G = 0, B = 0;
+    let R = 0,
+        G = 0,
+        B = 0;
 
     // Find the red, green, and blue values based on the hue
     switch (d >>> 0) {
@@ -125,7 +126,11 @@ const HSVtoRGB = (hue, saturation, value) => {
     }
 
     // return the red, green, and blue values
-    return { R: R, G: G, B: B };
+    return {
+        R: R,
+        G: G,
+        B: B
+    };
 };
 
 export function getAverageColor(imageElement, ratio = 1) {
@@ -141,8 +146,8 @@ export function getAverageColor(imageElement, ratio = 1) {
     context.drawImage(imageElement, 0, 0)
 
     let data, length;
-    let i = -4;         // start at -4 so first iteration is 0
-    let count = 0;      // keep track of number of pixels
+    let i = -4; // start at -4 so first iteration is 0
+    let count = 0; // keep track of number of pixels
 
     try {
         // get image data
@@ -238,16 +243,14 @@ export const makeColorLighter = (color) => {
     // edit saturation
     if (colorHSV.S < 50) {
         colorHSV.S += 20;
-    }
-    else if (colorHSV.S < 60) {
+    } else if (colorHSV.S < 60) {
         colorHSV.S += 10;
     }
 
     // edit value
     if (colorHSV.V < 60) {
         colorHSV.V += 20;
-    }
-    else if (colorHSV.V < 70) {
+    } else if (colorHSV.V < 70) {
         colorHSV.V += 10;
     }
 
@@ -269,24 +272,21 @@ export const makeColorDarker = (color) => {
     // edit hue
     if (colorHSV.H > 20) {
         colorHSV.H += 10;
-    }
-    else if (colorHSV.H > 10) {
+    } else if (colorHSV.H > 10) {
         colorHSV.H += 20;
     }
 
     // edit saturation
     if (colorHSV.S > 90) {
         colorHSV.S -= 15;
-    }
-    else if (colorHSV.S > 80) {
+    } else if (colorHSV.S > 80) {
         colorHSV.S -= 10;
     }
 
     // edit value
     if (colorHSV.V > 60) {
         colorHSV.V -= 25;
-    }
-    else if (colorHSV.V > 50) {
+    } else if (colorHSV.V > 50) {
         colorHSV.V -= 10;
     }
 
@@ -415,7 +415,10 @@ export const getUserData = () => {
             signal: controller.signal
         }).then((response) => {
             // return user data
-            return resolve({ status: response.data && response.data.status, data: response.data });
+            return resolve({
+                status: response.data && response.data.status,
+                data: response.data
+            });
         }).catch((err) => {
             // check if error is abort error
             if (err.name === "CanceledError") {
@@ -423,7 +426,10 @@ export const getUserData = () => {
             }
             console.log(err);
 
-            return resolve({ status: false, data: null });
+            return resolve({
+                status: false,
+                data: null
+            });
         });
 
         console.log("Axios sent get user data request.")

@@ -1,6 +1,6 @@
 
 export const defaultProfilePicture = "/assets/images/avatars/default.webp"
-
+export const defaultBannerColor = "[19,113,147]";
 export const allowSpecialCharactersInUsername = false;
 
 export const maxPermissionLevel = 2 // 0 = user, 1 = moderator, 2 = admin, OWNER is not included in this;

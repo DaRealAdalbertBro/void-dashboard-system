@@ -41,7 +41,8 @@
         "SALT_ROUNDS": 10
     },
     "defaults": {
-        "DEFAULT_AVATAR_URL": "/assets/images/default/avatar.webp",
+        "DEFAULT_AVATAR_URL": "/public/default/default.webp",
+        "DEFAULT_CLIENT_AVATAR_URL": "/assets/images/avatars/default.webp",
         "DEFAULT_BANNER_COLOR": "[19,113,147]",
         "DEFAULT_PERMISSIONS": 0,
         "DEFAULT_MAX_FILE_SIZE": [

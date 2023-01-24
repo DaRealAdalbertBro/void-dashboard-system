@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # Public uploads folder
-.server/public/uploads/
+.server/cdn/uploads/*
