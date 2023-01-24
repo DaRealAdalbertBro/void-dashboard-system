@@ -175,7 +175,8 @@ module.exports = function (app, db_connection, upload) {
         if (user_permissions.status
             && request.session.user.user_id != user_id.value
             && user_permissions.value !== result[0][CONFIG.database.users_table_columns.user_permissions]
-            && request.session.user.user_permissions >= CONFIG.permissions.administrator) {
+            && request.session.user.user_permissions >= CONFIG.permissions.administrator
+            && request.session.user.user_permissions > user_permissions.value){
 
             updateObject.user_permissions = user_permissions.value;
         }

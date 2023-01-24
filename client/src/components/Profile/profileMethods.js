@@ -37,7 +37,7 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
                 .catch(error => error);
             break;
         case "resetAvatar":
-            canUpdateData = resetAvatar(data);
+            canUpdateData = resetAvatar(data.user);
             break;
 
         default:
@@ -49,7 +49,6 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
 
     if (!canUpdateData.status) {
         // show error popup
-        console.log(canUpdateData)
         UpdateCustomPopup(popupContext.active, popupContext.title, popupContext.message);
         return false;
     }
@@ -63,7 +62,6 @@ export const submitSettings = async (data, options = { type: "userinfo" }) => {
         .then(response => response)
         .catch(err => err);
 
-        console.log(response)
     // if update was successful
     if (response.data && response.data.status) {
         // reload page
@@ -157,7 +155,6 @@ export const isAvatarUpdateValid = (data, image) => {
     return new Promise((resolve, reject) => {
         // create form data
         const formData = new FormData();
-        console.log(data)
 
         // check if user id is valid
         if (!data.user_id) {

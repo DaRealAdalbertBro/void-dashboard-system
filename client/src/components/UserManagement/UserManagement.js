@@ -184,7 +184,9 @@ const UserBox = ({ user, navigate }) => {
                 return navigate("/dashboard/profile/" + user.user_id);
             }} style={{ "backgroundImage": averageColorToLighterGradient(user.user_banner_color) }} />
 
-            <div className="flex-column flex center">
+            <div className="flex-column flex center" onClick={() => {
+                return navigate("/dashboard/profile/" + user.user_id);
+            }}>
                 <div className="avatar">
                     <img src={user.user_avatar_url || defaultProfilePicture} alt="" />
                 </div>
