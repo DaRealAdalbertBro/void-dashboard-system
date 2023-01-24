@@ -116,7 +116,7 @@ const upload = multer({
     limits: { fileSize: CONFIG.defaults.DEFAULT_MAX_FILE_SIZE[1] },
     fileFilter: (req, file, cb) => {
         if (file.mimetype.includes('image') || file.mimetype.includes('gif')) {
-            fs.unlink("/cdn/uploads" + req.session.user.user_avatar_url.split("/").pop(), (err) => {
+            fs.unlink(path.join(__dirname, "/cdn/uploads/", req.session.user.user_avatar_url.split("/").pop()), (err) => {
                 if(err && !err.code == "ENOENT"){
                     cb(null, false)
                     return cb(err)
