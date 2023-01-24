@@ -211,7 +211,6 @@ module.exports = function (app, db_connection, upload) {
             return response.send({ status: 1, message: CONFIG.messages.USER_UPDATED, user: userObject });
         }
 
-        
         // if there's an avatar url
         if(user_avatar_url.status
             && user_avatar_url.value === CONFIG.defaults.DEFAULT_CLIENT_AVATAR_URL

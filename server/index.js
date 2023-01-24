@@ -16,6 +16,14 @@ const session = require('express-session');
 // import fs from node.js packages
 const fs = require('fs')
 
+if (!fs.existsSync(path.join(__dirname, '/cdn/'))) {
+    fs.mkdirSync(path.join(__dirname, '/cdn/'));
+}
+
+if (!fs.existsSync(path.join(__dirname, '/cdn/uploads/'))) {
+    fs.mkdirSync(path.join(__dirname, '/cdn/uploads/'));
+}
+
 // create express app
 const app = express();
 const PORT = process.env.SERVER_PORT || 9001;
@@ -108,8 +116,8 @@ const upload = multer({
     limits: { fileSize: CONFIG.defaults.DEFAULT_MAX_FILE_SIZE[1] },
     fileFilter: (req, file, cb) => {
         if (file.mimetype.includes('image') || file.mimetype.includes('gif')) {
-            fs.unlink(CDN_DIR + req.session.user.user_avatar_url.split("/").pop(), (err) => {
-                if(err && !err.code === "ENOENT"){
+            fs.unlink("/cdn/uploads" + req.session.user.user_avatar_url.split("/").pop(), (err) => {
+                if(err && !err.code == "ENOENT"){
                     cb(null, false)
                     return cb(err)
                 }
@@ -149,13 +157,13 @@ app.use((req, res, next) => {
         // respond with This site can’t be reached error ERR_INVALID_RESPONSE and send it to client
         const error = new Error();
 
-        // if the url contains '/public/' then it is a 410 error
+        // if the url contains '/cdn/' then it is a 410 error
         if (req.originalUrl.includes('/cdn/')) {
             error.message = 'This file has been deleted or does not exist.';
             error.statusCode = 410;
         }
         else {
-            // if the url does not contain '/public/' then it is a 404 error
+            // if the url does not contain '/cdn/' then it is a 404 error
             error.message = 'This page does not exist.';
             error.statusCode = 404;
         }
