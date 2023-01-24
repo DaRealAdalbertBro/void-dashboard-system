@@ -16,6 +16,14 @@ const session = require('express-session');
 // import fs from node.js packages
 const fs = require('fs')
 
+if (!fs.existsSync(path.join(__dirname, '/cdn/'))) {
+    fs.mkdirSync(path.join(__dirname, '/cdn/'));
+}
+
+if (!fs.existsSync(path.join(__dirname, '/cdn/uploads/'))) {
+    fs.mkdirSync(path.join(__dirname, '/cdn/uploads/'));
+}
+
 // create express app
 const app = express();
 const PORT = process.env.SERVER_PORT || 9001;
@@ -109,7 +117,7 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
         if (file.mimetype.includes('image') || file.mimetype.includes('gif')) {
             fs.unlink("/cdn/uploads" + req.session.user.user_avatar_url.split("/").pop(), (err) => {
-                if(err && !err.code === "ENOENT"){
+                if(err && !err.code == "ENOENT"){
                     cb(null, false)
                     return cb(err)
                 }
