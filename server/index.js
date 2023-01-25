@@ -96,7 +96,6 @@ db_connection.connect((error) => {
 });
 
 // set up multer
-const uuid = require('uuid').v4;
 const multer = require('multer');
 
 // set up storage
@@ -144,7 +143,7 @@ require("./api/post/transferOwnership")(app, db_connection);
 require("./api/get/userinfo")(app);
 
 
-// create server on port 3001 or port specified in .env file
+// create server on port 9001 or port specified in .env file
 app.listen(PORT, () => {
     console.log('SERVER HAS STARTED ON PORT ' + PORT);
     console.log("-----------------------------------")

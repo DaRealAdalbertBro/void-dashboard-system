@@ -12,9 +12,8 @@
     "fs": "^0.0.1-security",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
-    "path": "^0.12.7",
-    "validator": "^13.7.0",
     "node-fetch": "^3.3.0",
-    "uuid": "^3.4.0"
+    "path": "^0.12.7",
+    "validator": "^13.7.0"
   }
 }

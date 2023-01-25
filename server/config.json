@@ -51,7 +51,7 @@
         ],
         "DEFAULT_PARAMETER_LIMIT": 1000,
         "DEFAULT_CORS_ORIGIN": [
-            "http://localhost:3000"
+            "http://localhost:9000"
         ],
         "DEFAULT_ALLOW_SPECIAL_CHARACTERS": true
     },
